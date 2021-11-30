@@ -1,0 +1,6 @@
+- Login
+- Signup
+- Create card
+- Home
+- Card detail
+- NFC pay

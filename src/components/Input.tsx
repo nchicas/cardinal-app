@@ -1,6 +1,6 @@
 import {placeholder} from '@babel/types';
 import React from 'react';
-import {StyleSheet, TextInput, View} from 'react-native';
+import {StyleSheet, TextInput, View, ViewProps, ViewStyle} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {colors} from '../utils.tsx/colors';
 
@@ -8,17 +8,28 @@ type PropsInput = {
   placeholder: string;
   icon?: string;
   isPassword?: boolean;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  containerStyle?: ViewStyle;
 };
 
 const Input = ({
   isPassword = false,
   placeholder,
   icon = 'mail',
+  value = '',
+  onValueChange = () => {},
+  containerStyle,
 }: PropsInput) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle ? containerStyle : {}]}>
       <Icon name={icon} size={20} color={colors.purple} />
-      <TextInput placeholder={placeholder} style={styles.input} />
+      <TextInput
+        placeholder={placeholder}
+        style={styles.input}
+        value={value}
+        onChangeText={onValueChange}
+      />
       {isPassword && <Icon name="eye" size={20} color={colors.purple} />}
     </View>
   );

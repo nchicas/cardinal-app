@@ -8,6 +8,7 @@ import {SharedElement} from 'react-navigation-shared-element';
 import Input from '../components/Input';
 import {ScrollView} from 'react-native-gesture-handler';
 import Button from '../components/Button';
+import Toolbar3 from '../components/Toolbar3';
 
 const CreateCardScreen = () => {
   const [selected, setSelected] = useState(0);
@@ -40,20 +41,24 @@ const CreateCardScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Toolbar />
+      <Toolbar3 />
       <View style={{flex: 1, justifyContent: 'center'}}>
         <View style={{alignItems: 'center'}}>
-          <CreditCard
-            width={windowWidth * 0.8}
-            height={200}
-            imageFront={cards.c1.bg}
-            mainContainerStyle={{borderRadius: 20}}
-            cvc={cvc}
-            name={name}
-            number={numberCard}
-            focused={focused}
-            expiry={`${monthCard}${yearCard}`}
-          />
+          <SharedElement
+            id="CARD"
+            style={{borderRadius: 20, overflow: 'hidden'}}>
+            <CreditCard
+              width={windowWidth * 0.8}
+              height={200}
+              imageFront={cards.c1.bg}
+              mainContainerStyle={{borderRadius: 20, overflow: 'hidden'}}
+              cvc={cvc}
+              name={name}
+              number={numberCard}
+              focused={focused}
+              expiry={`${monthCard}${yearCard}`}
+            />
+          </SharedElement>
         </View>
         <View style={{marginHorizontal: 20, marginVertical: 10}}>
           <Input

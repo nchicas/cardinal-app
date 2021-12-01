@@ -1,3 +1,5 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
 import {Text} from 'react-native-animatable';
@@ -7,6 +9,7 @@ import TextButton from '../components/TextButton';
 import {colors} from '../utils.tsx/colors';
 
 const SignupScreen = () => {
+  const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <View style={styles.container}>
       <ScrollView style={{flex: 1, marginHorizontal: 20}}>
@@ -23,8 +26,12 @@ const SignupScreen = () => {
         <Input placeholder="Password" isPassword icon="key" />
         <Input placeholder="Repeat Password" isPassword icon="key" />
         <View style={{flex: 0, marginVertical: 10}}>
-          <Button text="Sign up" />
-          <Button text="Cancel" styleDisable />
+          <Button text="Sign up" onPress={() => navigation.goBack()} />
+          <Button
+            text="Cancel"
+            styleDisable
+            onPress={() => navigation.goBack()}
+          />
         </View>
       </ScrollView>
     </View>
@@ -42,7 +49,7 @@ const styles = StyleSheet.create({
   },
   fooderText: {
     marginRight: 4,
-    color: '#1d1f23ds',
+    color: '#1d1f23',
     fontFamily: 'Karla',
     fontSize: 14,
   },

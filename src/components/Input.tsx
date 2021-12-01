@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   input: {
-    color: '#1d1f23ds',
+    color: '#1d1f23',
     fontFamily: 'Karla',
     fontSize: 20,
     flex: 1,

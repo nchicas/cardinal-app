@@ -8,11 +8,17 @@ import {colors} from '../utils.tsx/colors';
 type PropsInput = {
   text?: string;
   styleDisable?: boolean;
+  onPress?: () => void;
 };
 
-const Button = ({text = '', styleDisable = false}: PropsInput) => {
+const Button = ({
+  text = '',
+  styleDisable = false,
+  onPress = () => {},
+}: PropsInput) => {
   return (
     <TouchableOpacity
+      onPress={onPress}
       style={styleDisable ? styles.containerDisable : styles.container}>
       <Text style={styleDisable ? styles.titleDisable : styles.title}>
         {text.toUpperCase()}

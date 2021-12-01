@@ -10,28 +10,27 @@ import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
 import CreateCardScreen from './screens/CreateCardScreen';
 
+import {StoreContext, useStoreon} from 'storeon/react';
+import store, {Events, States} from './store/store';
+import MainNavigator from './navigations/MainNavigator';
+import AuthNavigator from './navigations/AuthNavigator';
+
 const Stack = createSharedElementStackNavigator();
+
+const Load = () => {
+  const {token, dispatch} = useStoreon<States, Events>('token');
+  return (
+    <NavigationContainer>
+      {token ? <MainNavigator /> : <AuthNavigator />}
+    </NavigationContainer>
+  );
+};
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="CreateCardScreen"
-        screenOptions={{headerShown: false}}>
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="SignupScreen" component={SignupScreen} />
-        <Stack.Screen name="CreateCardScreen" component={CreateCardScreen} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen
-          name="CardsScreen"
-          component={CardsScreen}
-          sharedElements={(route, otherRoute, showing) => {
-            const {item} = route.params;
-            return [`CARD`];
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <StoreContext.Provider value={store}>
+      <Load />
+    </StoreContext.Provider>
   );
 };
 

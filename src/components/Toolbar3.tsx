@@ -8,12 +8,10 @@ const Toolbar = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.borderItem}>Done</Text>
+        <Text style={styles.borderItem}>Cancel</Text>
       </TouchableOpacity>
       <Text style={styles.centralItem}>Cardinal</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('CreateCardScreen')}>
-        <Text style={styles.borderItem}>+</Text>
-      </TouchableOpacity>
+      <Text style={styles.borderItem}></Text>
     </View>
   );
 };
@@ -28,9 +26,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   borderItem: {
-    width: 60,
+    width: 70,
     textAlign: 'center',
-    fontSize: 24,
+    fontSize: 22,
     color: '#2d2c5f',
     fontFamily: 'Karla-Bold',
     fontWeight: 'bold',

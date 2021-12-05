@@ -62,6 +62,7 @@ const HomeScreen = () => {
     {name: 'John Doe', amount: 10},
     {name: 'John Doe', amount: 20},
     {name: 'John Doe', amount: 30},
+    {name: '', amount: 0},
   ]);
 
   return (
@@ -72,8 +73,12 @@ const HomeScreen = () => {
         <View style={styles.cardContainer}>
           <Carousel
             data={cards}
-            renderItem={({item}) => (
-              <CardItem name={item.name} amount={item.amount} />
+            renderItem={({item, index}) => (
+              <CardItem
+                name={item.name}
+                amount={item.amount}
+                isLastCard={index === cards.length - 1}
+              />
             )}
             sliderWidth={310}
             sliderHeight={210}

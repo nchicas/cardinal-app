@@ -1,13 +1,15 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';
 
 export type Props = {
   name: string;
   amount: number;
+  isLastCard: boolean;
 };
 
-const CardItem = ({name, amount}: Props) => {
+const CardItem = ({name, amount, isLastCard}: Props) => {
   return (
     <View
       style={{
@@ -17,13 +19,24 @@ const CardItem = ({name, amount}: Props) => {
         borderRadius: 15,
         padding: 20,
       }}>
-      <Text style={styles.title}>{name}</Text>
-      <View style={{flex: 1}} />
-      <View>
-        <Text style={styles.company}>Cardinal</Text>
-        <Text style={styles.code}>*************6666</Text>
-        <Text style={styles.amount}>{`$${amount}`}</Text>
-      </View>
+      {isLastCard ? (
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <View style={{alignItems: 'center'}}>
+            <Icon name="add-circle-sharp" size={80} color={colors.whith} />
+            <Text style={styles.lastText}>Add new card</Text>
+          </View>
+        </View>
+      ) : (
+        <>
+          <Text style={styles.title}>{name}</Text>
+          <View style={{flex: 1}} />
+          <View>
+            <Text style={styles.company}>Cardinal</Text>
+            <Text style={styles.code}>*************6666</Text>
+            <Text style={styles.amount}>{`$${amount}`}</Text>
+          </View>
+        </>
+      )}
     </View>
   );
 };
@@ -46,6 +59,11 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontFamily: 'Poppins-Bold',
+    color: colors.whith,
+    fontSize: 20,
+  },
+  lastText: {
+    fontFamily: 'Poppins-Medium',
     color: colors.whith,
     fontSize: 20,
   },

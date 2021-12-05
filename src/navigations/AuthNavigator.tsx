@@ -1,10 +1,10 @@
 import React from 'react';
-import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
 import LoginScreen from '../screens/LoginScreen';
 import RecoveryPassScreen from '../screens/RecoveryPassScreen';
 import SignupScreen from '../screens/SignupScreen';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-const Stack = createSharedElementStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
   return (

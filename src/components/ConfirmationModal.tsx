@@ -1,6 +1,13 @@
 import React from 'react';
-import {Image, Modal, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {View} from 'react-native-animatable';
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
 import {colors} from '../utils.tsx/colors';
 import Button from './Button';
 

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, SectionList} from 'react-native';
-import {Text} from 'react-native-animatable';
+import {StyleSheet, View, SectionList, Text} from 'react-native';
 import TransactionItem from '../components/TransactionItem';
 
 import Toolbar from '../components/Toolbar';

@@ -1,12 +1,12 @@
 import React from 'react';
-import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
-import CardsScreen from '../screens/CardsScreen';
+
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import CreateCardScreen from '../screens/CreateCardScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-const Stack = createSharedElementStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const MainNavigator = () => {
   return (

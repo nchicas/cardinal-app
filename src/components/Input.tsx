@@ -1,7 +1,6 @@
-import {placeholder} from '@babel/types';
 import React, {useState} from 'react';
-import {StyleSheet, TextInput, View, ViewProps, ViewStyle} from 'react-native';
-import {Text} from 'react-native-animatable';
+import {StyleSheet, Text, TextInput, View, ViewStyle} from 'react-native';
+
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';

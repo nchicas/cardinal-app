@@ -1,6 +1,5 @@
 import React from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import {Text} from 'react-native-animatable';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {colors} from '../utils.tsx/colors';
 
 type PropsInput = {

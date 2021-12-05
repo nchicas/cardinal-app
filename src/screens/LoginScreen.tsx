@@ -7,8 +7,8 @@ import {
   View,
   SafeAreaView,
   Image,
+  Text,
 } from 'react-native';
-import {Text} from 'react-native-animatable';
 import {useStoreon} from 'storeon/react';
 import Button from '../components/Button';
 import Input from '../components/Input';

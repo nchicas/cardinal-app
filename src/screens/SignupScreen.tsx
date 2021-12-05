@@ -1,15 +1,12 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState} from 'react';
-import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
-import {Text} from 'react-native-animatable';
+import {StyleSheet, View, ScrollView} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import Input from '../components/Input';
-import TextButton from '../components/TextButton';
 import Toolbar from '../components/Toolbar';
 import {colors} from '../utils.tsx/colors';
-import DropShadow from 'react-native-drop-shadow';
 import LoginTitle from '../components/LoginTitle';
 
 const SignupScreen = () => {

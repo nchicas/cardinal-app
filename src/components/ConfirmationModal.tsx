@@ -1,7 +1,6 @@
 import React from 'react';
 import {Image, Modal, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {View} from 'react-native-animatable';
-import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';
 import Button from './Button';
 

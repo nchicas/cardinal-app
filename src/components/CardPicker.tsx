@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {View} from 'react-native-animatable';
-import Icon from 'react-native-vector-icons/Ionicons';
 import CheckBox from '@react-native-community/checkbox';
 import {colors} from '../utils.tsx/colors';
 

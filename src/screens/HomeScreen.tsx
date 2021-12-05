@@ -1,24 +1,12 @@
 import React, {useState} from 'react';
-import {
-  Animated,
-  StyleSheet,
-  View,
-  Dimensions,
-  ScrollView,
-  TouchableOpacity,
-  SectionList,
-} from 'react-native';
+import {StyleSheet, View, SectionList} from 'react-native';
 import {Text} from 'react-native-animatable';
 import TransactionItem from '../components/TransactionItem';
-import {SharedElement} from 'react-navigation-shared-element';
 
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
 import Toolbar from '../components/Toolbar';
 import {colors} from '../utils.tsx/colors';
 import {FloatingAction} from 'react-native-floating-action';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Transaction from '../models/Transaction';
 import TransactionCategory from '../models/TransactionCategory';
 import TransactionStatus from '../enums/TransactionStatus';
 import TransactionItemHeader from '../components/TransactionItemHeader';

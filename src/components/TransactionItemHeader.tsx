@@ -1,7 +1,6 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Text} from 'react-native-animatable';
-import Icon from 'react-native-vector-icons/Feather';
 import {colors} from '../utils.tsx/colors';
 
 export type TransactionItemProps = {

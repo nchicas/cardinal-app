@@ -1,9 +1,6 @@
-import {placeholder} from '@babel/types';
 import React from 'react';
-import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity} from 'react-native';
 import {Text} from 'react-native-animatable';
-import Icon from 'react-native-vector-icons/Feather';
-import {colors} from '../utils.tsx/colors';
 
 type PropsInput = {
   text?: string;

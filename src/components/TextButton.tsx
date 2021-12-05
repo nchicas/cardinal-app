@@ -8,28 +8,26 @@ import {colors} from '../utils.tsx/colors';
 type PropsInput = {
   text?: string;
   size?: number;
+  color?: string;
 };
 
-const TextButton = ({text = '', size = 20}: PropsInput) => {
+const TextButton = ({text = '', size = 20, color = '#000000'}: PropsInput) => {
   return (
     <TouchableOpacity style={styles.container}>
-      <Text style={[styles.title, {fontSize: size}]}>{text.toUpperCase()}</Text>
+      <Text style={[styles.title, {fontSize: size}, {color: color}]}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 4,
-    borderRadius: 20,
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 20,
+    minHeight: 20,
+    backgroundColor: '#FFFFFF',
   },
   title: {
-    color: colors.purple,
-    fontFamily: 'Karla-Bold',
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Medium',
     flex: 1,
     marginHorizontal: 8,
     textAlignVertical: 'center',

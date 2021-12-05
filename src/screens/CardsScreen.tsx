@@ -199,7 +199,6 @@ const CardsScreen = () => {
               shadowOffset: {width: 2, height: 2},
               shadowOpacity: 0.4,
               marginBottom: 10,
-              elevation: 1,
             }}
           />
           <Animated.View
@@ -216,7 +215,6 @@ const CardsScreen = () => {
               shadowOffset: {width: 2, height: 2},
               shadowOpacity: 0.4,
               marginBottom: 10,
-              elevation: 1,
             }}
           />
           <Animated.View
@@ -225,7 +223,6 @@ const CardsScreen = () => {
               borderRadius: 20,
               position: 'absolute',
               transform: [{translateY: cardJumpingAnimation1}],
-              elevation: 2,
               overflow: 'hidden',
             }}>
             <SharedElement id="CARD">
@@ -276,7 +273,6 @@ const CardsScreen = () => {
                 },
                 {translateY: cardMoveAnimation},
               ],
-              elevation: 2,
               overflow: 'hidden',
             }}>
             <CreditCard

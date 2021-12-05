@@ -2,46 +2,61 @@ import {useNavigation} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {colors} from '../utils.tsx/colors';
 
-const Toolbar = () => {
+export type Props = {
+  title: string;
+  showGoBack?: boolean;
+  showOption?: boolean;
+  color?: string;
+};
+
+const Toolbar = ({
+  title = '',
+  showGoBack = true,
+  showOption = true,
+  color = colors.whith,
+}: Props) => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.borderItem}>Done</Text>
-      </TouchableOpacity>
-      <Text style={styles.centralItem}>Cardinal</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('CreateCardScreen')}>
-        <Text style={styles.borderItem}>+</Text>
-      </TouchableOpacity>
+      {showGoBack && (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon
+            name="chevron-back-outline"
+            size={24}
+            color={color}
+            style={{marginRight: 16}}
+          />
+        </TouchableOpacity>
+      )}
+      <Text style={styles.centralItem}>{title}</Text>
+      {showOption && (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('CreateCardScreen')}>
+          <Icon name="settings-sharp" size={24} color={color} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f7fbff',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    height: 60,
     marginHorizontal: 20,
-  },
-  borderItem: {
-    width: 60,
-    textAlign: 'center',
-    fontSize: 24,
-    color: '#2d2c5f',
-    fontFamily: 'Karla-Bold',
-    fontWeight: 'bold',
+    marginTop: 10,
   },
   centralItem: {
     flex: 1,
-    textAlign: 'center',
-    fontSize: 28,
-    color: '#1d1f23',
-    fontFamily: 'Karla-Bold',
-    fontWeight: 'bold',
+    fontSize: 20,
+    color: colors.whith,
+    fontFamily: 'Poppins-SemiBold',
+    textAlignVertical: 'center',
+    transform: [{translateY: 2}],
   },
 });
 

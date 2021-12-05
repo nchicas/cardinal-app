@@ -1,3 +1,7 @@
 export const colors = {
-  purple: '#2d2c5f',
+  primary: '#281C9D',
+  secundary: '#3629B7',
+  textBlack: '#343434',
+  textGray: '#CACACA',
+  whith: '#FFFFFF',
 };

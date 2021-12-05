@@ -6,202 +6,109 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
+  SectionList,
 } from 'react-native';
-import GestureRecognizer from 'react-native-swipe-gestures';
-import CreditCard from 'react-native-credit-card-v2';
-import Toolbar2 from '../components/Toolbar2';
 import {Text} from 'react-native-animatable';
 import TransactionItem from '../components/TransactionItem';
 import {SharedElement} from 'react-navigation-shared-element';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useNavigation} from '@react-navigation/native';
+import Toolbar from '../components/Toolbar';
+import {colors} from '../utils.tsx/colors';
+import {FloatingAction} from 'react-native-floating-action';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Transaction from '../models/Transaction';
+import TransactionCategory from '../models/TransactionCategory';
+import TransactionStatus from '../enums/TransactionStatus';
+import TransactionItemHeader from '../components/TransactionItemHeader';
+import Carousel from 'react-native-snap-carousel';
+import CardItem from '../components/CardItem';
+import Card from '../models/Card';
 
-type Props = NativeStackScreenProps<any, any>;
-
-const HomeScreen = ({navigation}: Props) => {
-  const [cardJumpingAnimation1] = useState(new Animated.Value(0));
-  const [cardJumpingAnimation2] = useState(new Animated.Value(10));
-  const [cardJumpingAnimation3] = useState(new Animated.Value(20));
-  const [cardComtainerHeight] = useState(new Animated.Value(220));
-  const [cardHeight] = useState(new Animated.Value(200));
-  const [selected, setSelected] = useState(0);
-
-  const images = [
-    require('../assets/c1.png'),
-    require('../assets/c2.png'),
-    require('../assets/c3.png'),
-    require('../assets/c4.png'),
-    require('../assets/c5.png'),
-  ];
-  const [cards, setCards] = useState({
-    c1: {
-      bg: images[selected],
+const HomeScreen = () => {
+  const [transactions, setTransactions] = useState<TransactionCategory[]>([
+    {
+      title: 'Category 1',
+      data: [
+        {
+          title: 'Transaction 1',
+          description: 'Transaction description 1',
+          amount: 0,
+          status: TransactionStatus.Ok,
+        },
+      ],
     },
-    c2: {
-      bg: images[selected + 1],
+    {
+      title: 'Category 2',
+      data: [
+        {
+          title: 'Transaction 2',
+          description: 'Transaction description 1',
+          amount: 10,
+          status: TransactionStatus.Ok,
+        },
+        {
+          title: 'Transaction 3',
+          description: 'Transaction description 1',
+          amount: 30,
+          status: TransactionStatus.Ok,
+        },
+      ],
     },
-    c3: {
-      bg: images[selected + 2],
-    },
-  });
+  ]);
 
-  const windowWidth = Dimensions.get('window').width;
-
-  const swipUp = () => {
-    Animated.timing(cardHeight, {
-      toValue: 100,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(cardComtainerHeight, {
-      toValue: 100,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const swipDown = () => {
-    Animated.timing(cardHeight, {
-      toValue: 200,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-
-    Animated.timing(cardComtainerHeight, {
-      toValue: 220,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  };
+  const [cards, setCards] = useState<Card[]>([
+    {name: 'John Doe', amount: 10},
+    {name: 'John Doe', amount: 20},
+    {name: 'John Doe', amount: 30},
+  ]);
 
   return (
     <View style={styles.container}>
-      <Toolbar2 />
+      <Toolbar title="Transaction report" showGoBack={false} />
 
-      <GestureRecognizer
-        onSwipeUp={() => {
-          console.log('SWIPE UP');
-          swipUp();
-        }}
-        onSwipeDown={() => {
-          console.log('SWIPE DOWN');
-          swipDown();
-        }}
-        style={styles.cardsContainer}>
-        <Animated.View
-          style={{
-            width: '80%',
-            height: cardComtainerHeight,
-            alignItems: 'center',
-            overflow: 'hidden',
-          }}>
-          <Animated.View
-            style={{
-              backgroundColor: '#f7f7f7',
-              width: '90%',
-              height: cardHeight,
-              borderRadius: 12,
-              position: 'absolute',
-              transform: [{translateY: cardJumpingAnimation3}],
-              borderColor: '#f7f7f7',
-              borderWidth: 1,
-              shadowColor: '#000',
-              shadowOffset: {width: 2, height: 2},
-              shadowOpacity: 0.4,
-              marginBottom: 10,
-              elevation: 1,
-            }}
+      <View style={styles.content}>
+        <View style={styles.cardContainer}>
+          <Carousel
+            data={cards}
+            renderItem={({item}) => (
+              <CardItem name={item.name} amount={item.amount} />
+            )}
+            sliderWidth={310}
+            sliderHeight={210}
+            itemHeight={200}
+            itemWidth={300}
+            layout="tinder"
+            layoutCardOffset={9}
           />
-          <Animated.View
-            style={{
-              backgroundColor: '#fff',
-              width: '95%',
-              height: cardHeight,
-              borderRadius: 12,
-              position: 'absolute',
-              transform: [{translateY: cardJumpingAnimation2}],
-              borderColor: '#f7f7f7',
-              borderWidth: 1,
-              shadowColor: '#000',
-              shadowOffset: {width: 2, height: 2},
-              shadowOpacity: 0.4,
-              marginBottom: 10,
-              elevation: 1,
-            }}
-          />
-
-          <Animated.View
-            style={{
-              height: cardHeight,
-              width: '100%',
-              borderRadius: 20,
-              position: 'absolute',
-              transform: [{translateY: cardJumpingAnimation1}],
-              elevation: 2,
-              overflow: 'hidden',
-            }}>
-            <TouchableOpacity
-              style={{width: '100%'}}
-              onPress={() => navigation.navigate('CardsScreen')}>
-              <SharedElement id="CARD" style={{width: '100%'}}>
-                <CreditCard
-                  width={windowWidth * 0.8}
-                  imageFront={cards.c1.bg}
-                  mainContainerStyle={{
-                    height: cardHeight,
-                  }}
-                  clickable={false}
-                />
-              </SharedElement>
-            </TouchableOpacity>
-          </Animated.View>
-        </Animated.View>
-
-        <ScrollView style={{width: '90%', flex: 1}}>
+        </View>
+        <View style={{flex: 1}}>
           <Text style={styles.title}>Transacciones</Text>
-          <TransactionItem
-            title="Compras"
-            transactions={2}
-            icon="shopping-bag"
-            iconBackground="#def2fd"
-            iconColor="#0087db"
-            amount={20}
+          <SectionList
+            sections={transactions}
+            keyExtractor={(item, index) => item.title + index}
+            renderItem={({item}) => (
+              <TransactionItem
+                title={item.title}
+                description={item.description}
+                amount={`+ $${item.amount}`}
+              />
+            )}
+            renderSectionHeader={({section: {title}}) => (
+              <TransactionItemHeader title={title} />
+            )}
           />
-          <TransactionItem
-            title="Entretenimiento"
-            transactions={66}
-            icon="headphones"
-            iconBackground="#EAE9F4"
-            iconColor="#4339A0"
-            amount={300}
-          />
-          <TransactionItem
-            title="Automovil"
-            transactions={5}
-            icon="truck"
-            iconBackground="#FAE8FC"
-            iconColor="#A751B1"
-            amount={100}
-          />
-          <TransactionItem
-            title="Comida"
-            transactions={14}
-            icon="coffee"
-            iconBackground="#FFE5E5"
-            iconColor="#B84D41"
-            amount={33}
-          />
-          <TransactionItem
-            title="Drogas"
-            transactions={120}
-            icon="shopping-cart"
-            iconBackground="#9a64ff"
-            iconColor="#3d2765"
-            amount={3420}
-          />
-        </ScrollView>
-      </GestureRecognizer>
+        </View>
+      </View>
+
+      <FloatingAction
+        floatingIcon={<Icon name="cash-sharp" size={30} color={colors.whith} />}
+        animated={true}
+        showBackground={false}
+        color={colors.secundary}
+        onPressMain={() => console.log('OPEN')}
+      />
     </View>
   );
 };
@@ -209,7 +116,23 @@ const HomeScreen = ({navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7fbff',
+    backgroundColor: colors.primary,
+  },
+  content: {
+    backgroundColor: colors.whith,
+    flex: 1,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginTop: 100,
+  },
+  cardContainer: {
+    height: 210,
+    width: 310,
+    marginTop: -100,
+    alignSelf: 'center',
+    zIndex: 10,
   },
   title: {
     fontSize: 20,

@@ -33,8 +33,7 @@ const Toolbar = ({
       )}
       <Text style={styles.centralItem}>{title}</Text>
       {showOption && (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('CreateCardScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('SettingsScreen')}>
           <Icon name="settings-sharp" size={24} color={color} />
         </TouchableOpacity>
       )}

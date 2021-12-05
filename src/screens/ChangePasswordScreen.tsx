@@ -11,23 +11,27 @@ import Toolbar from '../components/Toolbar';
 import {colors} from '../utils.tsx/colors';
 import DropShadow from 'react-native-drop-shadow';
 import LoginTitle from '../components/LoginTitle';
-import CardItem from '../components/CardItem';
 
-const CreateCardScreen = () => {
+const ChangePasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <SafeAreaView style={styles.container}>
-      <Toolbar title="New card" showOption={false} />
+      <Toolbar title="Password" showOption={false} />
       <View style={styles.content}>
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
-            <View style={{alignItems: 'center', paddingTop: 10}}>
-              <CardItem name="John Doe" amount={0} isLastCard={false} />
-            </View>
-            <View style={{flex: 1, paddingTop: 10}}>
-              <Input label="Code" />
-            </View>
-            <Button text="Sign up" onPress={() => navigation.goBack()} />
+            <ScrollView>
+              <View
+                style={{
+                  flex: 1,
+                  alignItems: 'center',
+                }}>
+                <Input label="Old password" isPassword />
+                <Input label="Password" isPassword />
+                <Input label="Repeat Password" isPassword />
+              </View>
+            </ScrollView>
+            <Button text="Confirm" onPress={() => navigation.goBack()} />
           </View>
         </View>
       </View>
@@ -84,8 +88,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     flex: 1,
-    padding: 20,
+    padding: 10,
   },
 });
 
-export default CreateCardScreen;
+export default ChangePasswordScreen;

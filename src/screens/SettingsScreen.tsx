@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
 import {Text} from 'react-native-animatable';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -12,20 +12,30 @@ import {colors} from '../utils.tsx/colors';
 import DropShadow from 'react-native-drop-shadow';
 import LoginTitle from '../components/LoginTitle';
 import CardItem from '../components/CardItem';
+import CardButton from '../components/CardButton';
+import CardPicker from '../components/CardPicker';
 
-const CreateCardScreen = () => {
+const SettingsScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const [enableBiometric, setEnableBiometric] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
-      <Toolbar title="New card" showOption={false} />
+      <Toolbar title="Settings" showOption={false} />
       <View style={styles.content}>
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
-            <View style={{alignItems: 'center', paddingTop: 10}}>
-              <CardItem name="John Doe" amount={0} isLastCard={false} />
-            </View>
             <View style={{flex: 1, paddingTop: 10}}>
-              <Input label="Code" />
+              <CardPicker
+                text="Login biometric"
+                selected={enableBiometric}
+                onPress={() => setEnableBiometric(!enableBiometric)}
+              />
+
+              <CardButton
+                text="Change password"
+                icon="chevron-forward-sharp"
+                onPress={() => navigation.navigate('ChangePasswordScreen')}
+              />
             </View>
             <Button text="Sign up" onPress={() => navigation.goBack()} />
           </View>
@@ -48,22 +58,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
-  fooderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 60,
-  },
-  fooderText: {
-    marginRight: 4,
-    color: '#1d1f23',
-    fontFamily: 'Karla',
-    fontSize: 14,
-  },
-  fooderBtnText: {
-    fontFamily: 'Karla',
-    fontSize: 14,
-    color: colors.primary,
-  },
+
   cardShadow: {
     flex: 1,
     marginTop: 10,
@@ -88,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateCardScreen;
+export default SettingsScreen;

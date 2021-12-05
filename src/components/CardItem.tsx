@@ -1,5 +1,7 @@
+import {useNavigation} from '@react-navigation/core';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';
 
@@ -10,6 +12,7 @@ export type Props = {
 };
 
 const CardItem = ({name, amount, isLastCard}: Props) => {
+  const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <View
       style={{
@@ -22,7 +25,10 @@ const CardItem = ({name, amount, isLastCard}: Props) => {
       {isLastCard ? (
         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
           <View style={{alignItems: 'center'}}>
-            <Icon name="add-circle-sharp" size={80} color={colors.whith} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('CreateCardScreen')}>
+              <Icon name="add-circle-sharp" size={80} color={colors.whith} />
+            </TouchableOpacity>
             <Text style={styles.lastText}>Add new card</Text>
           </View>
         </View>

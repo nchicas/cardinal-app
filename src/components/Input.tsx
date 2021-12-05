@@ -41,7 +41,9 @@ const Input = ({
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    backgroundColor: colors.whith,
+  },
   subcontainer: {
     width: '100%',
     borderColor: colors.textGray,

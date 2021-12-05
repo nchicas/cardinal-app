@@ -25,6 +25,7 @@ import TransactionItemHeader from '../components/TransactionItemHeader';
 import Carousel from 'react-native-snap-carousel';
 import CardItem from '../components/CardItem';
 import Card from '../models/Card';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const HomeScreen = () => {
   const [transactions, setTransactions] = useState<TransactionCategory[]>([
@@ -64,6 +65,8 @@ const HomeScreen = () => {
     {name: 'John Doe', amount: 30},
     {name: '', amount: 0},
   ]);
+
+  const [showModalPayment, setShowModalPayment] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -112,7 +115,14 @@ const HomeScreen = () => {
         animated={true}
         showBackground={false}
         color={colors.secundary}
-        onPressMain={() => console.log('OPEN')}
+        onPressMain={() => setShowModalPayment(true)}
+      />
+      <ConfirmationModal
+        title="New payment"
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac est ipsum. Nulla dolor justo, vestibulum auctor felis nec, aliquam molestie erat. Donec ligula libero, dictum id leo eget, consectetur posuere quam. Pellentesque pellentesque nisi vel justo faucibus porta."
+        show={showModalPayment}
+        onValidated={() => setShowModalPayment(false)}
+        onCancel={() => setShowModalPayment(false)}
       />
     </View>
   );

@@ -14,10 +14,14 @@ import LoginTitle from '../components/LoginTitle';
 import CardItem from '../components/CardItem';
 import CardButton from '../components/CardButton';
 import CardPicker from '../components/CardPicker';
+import {useStoreon} from 'storeon/react';
+import {States, Events} from '../store/store';
 
 const SettingsScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const [enableBiometric, setEnableBiometric] = useState(false);
+  const {token, dispatch} = useStoreon<States, Events>('token');
+
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="Settings" showOption={false} />
@@ -37,7 +41,7 @@ const SettingsScreen = () => {
                 onPress={() => navigation.navigate('ChangePasswordScreen')}
               />
             </View>
-            <Button text="Sign up" onPress={() => navigation.goBack()} />
+            <Button text="Sign out" onPress={() => dispatch('setToken', '')} />
           </View>
         </View>
       </View>

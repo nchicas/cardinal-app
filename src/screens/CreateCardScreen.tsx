@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
 import {Text} from 'react-native-animatable';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -12,9 +12,11 @@ import {colors} from '../utils.tsx/colors';
 import DropShadow from 'react-native-drop-shadow';
 import LoginTitle from '../components/LoginTitle';
 import CardItem from '../components/CardItem';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const CreateCardScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const [showModalCard, setShowModalCard] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="New card" showOption={false} />
@@ -27,10 +29,20 @@ const CreateCardScreen = () => {
             <View style={{flex: 1, paddingTop: 10}}>
               <Input label="Code" />
             </View>
-            <Button text="Sign up" onPress={() => navigation.goBack()} />
+            <Button text="Sign up" onPress={() => setShowModalCard(true)} />
           </View>
         </View>
       </View>
+      <ConfirmationModal
+        title="New card"
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac est ipsum. Nulla dolor justo, vestibulum auctor felis nec, aliquam molestie erat. Donec ligula libero, dictum id leo eget, consectetur posuere quam. Pellentesque pellentesque nisi vel justo faucibus porta."
+        show={showModalCard}
+        onValidated={() => {
+          setShowModalCard(false);
+          navigation.goBack();
+        }}
+        onCancel={() => setShowModalCard(false)}
+      />
     </SafeAreaView>
   );
 };

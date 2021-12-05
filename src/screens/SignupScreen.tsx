@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
 import {Text} from 'react-native-animatable';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -14,6 +14,14 @@ import LoginTitle from '../components/LoginTitle';
 
 const SignupScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const [date, setData] = useState({
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    password: '',
+    repeatPassword: '',
+  });
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="Sign up" showOption={false} />
@@ -30,12 +38,38 @@ const SignupScreen = () => {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Input label="First Name" />
-                <Input label="Last Name" />
-                <Input label="Username" />
-                <Input label="Email" />
-                <Input label="Password" isPassword />
-                <Input label="Repeat Password" isPassword />
+                <Input
+                  label="First Name"
+                  value={date.firstName}
+                  onValueChange={v => setData({...date, firstName: v})}
+                />
+                <Input
+                  label="Last Name"
+                  value={date.lastName}
+                  onValueChange={v => setData({...date, lastName: v})}
+                />
+                <Input
+                  label="Username"
+                  value={date.username}
+                  onValueChange={v => setData({...date, username: v})}
+                />
+                <Input
+                  label="Email"
+                  value={date.email}
+                  onValueChange={v => setData({...date, email: v})}
+                />
+                <Input
+                  label="Password"
+                  value={date.password}
+                  isPassword
+                  onValueChange={v => setData({...date, password: v})}
+                />
+                <Input
+                  label="Repeat Password"
+                  value={date.repeatPassword}
+                  onValueChange={v => setData({...date, repeatPassword: v})}
+                  isPassword
+                />
               </View>
             </ScrollView>
             <Button text="Sign up" onPress={() => navigation.goBack()} />

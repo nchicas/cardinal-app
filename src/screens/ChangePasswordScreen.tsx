@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
 import {Text} from 'react-native-animatable';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -14,6 +14,9 @@ import LoginTitle from '../components/LoginTitle';
 
 const ChangePasswordScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const [oldPassword, setOldPassword] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="Password" showOption={false} />
@@ -26,9 +29,24 @@ const ChangePasswordScreen = () => {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Input label="Old password" isPassword />
-                <Input label="Password" isPassword />
-                <Input label="Repeat Password" isPassword />
+                <Input
+                  label="Old password"
+                  isPassword
+                  value={oldPassword}
+                  onValueChange={v => setOldPassword(v)}
+                />
+                <Input
+                  label="Password"
+                  isPassword
+                  value={password}
+                  onValueChange={v => setPassword(v)}
+                />
+                <Input
+                  label="Repeat Password"
+                  isPassword
+                  value={repeatPassword}
+                  onValueChange={v => setRepeatPassword(v)}
+                />
               </View>
             </ScrollView>
             <Button text="Confirm" onPress={() => navigation.goBack()} />

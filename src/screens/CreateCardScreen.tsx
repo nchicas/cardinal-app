@@ -17,6 +17,8 @@ import ConfirmationModal from '../components/ConfirmationModal';
 const CreateCardScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const [showModalCard, setShowModalCard] = useState(false);
+  const [code, setCode] = useState('');
+
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="New card" showOption={false} />
@@ -27,7 +29,11 @@ const CreateCardScreen = () => {
               <CardItem name="John Doe" amount={0} isLastCard={false} />
             </View>
             <View style={{flex: 1, paddingTop: 10}}>
-              <Input label="Code" />
+              <Input
+                label="Code"
+                value={code}
+                onValueChange={v => setCode(v)}
+              />
             </View>
             <Button text="Sign up" onPress={() => setShowModalCard(true)} />
           </View>

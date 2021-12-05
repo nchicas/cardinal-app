@@ -1,8 +1,9 @@
 import {placeholder} from '@babel/types';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TextInput, View, ViewProps, ViewStyle} from 'react-native';
 import {Text} from 'react-native-animatable';
-import Icon from 'react-native-vector-icons/Feather';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';
 
 type PropsInput = {
@@ -24,6 +25,7 @@ const Input = ({
   showLabel = true,
   label = '',
 }: PropsInput) => {
+  const [showCode, setShowCode] = useState(false);
   return (
     <View style={[styles.container, containerStyle ? containerStyle : {}]}>
       {showLabel && <Text>{label}</Text>}
@@ -33,8 +35,17 @@ const Input = ({
           style={styles.input}
           value={value}
           onChangeText={onValueChange}
+          secureTextEntry={isPassword && !showCode}
         />
-        {isPassword && <Icon name="eye" size={20} color={colors.textBlack} />}
+        {isPassword && (
+          <TouchableOpacity onPress={() => setShowCode(!showCode)}>
+            <Icon
+              name={showCode ? 'eye' : 'eye-off'}
+              size={20}
+              color={colors.textBlack}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

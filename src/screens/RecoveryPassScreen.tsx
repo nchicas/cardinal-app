@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ScrollView} from 'react-native';
 import {Text} from 'react-native-animatable';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -14,6 +14,7 @@ import LoginTitle from '../components/LoginTitle';
 
 const RecoveryPassScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const [username, setUsername] = useState('');
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="Recovery" showOption={false} />
@@ -30,7 +31,11 @@ const RecoveryPassScreen = () => {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Input label="Username" />
+                <Input
+                  label="Username"
+                  value={username}
+                  onValueChange={v => setUsername(v)}
+                />
               </View>
             </ScrollView>
             <Button text="Confirm" onPress={() => navigation.goBack()} />

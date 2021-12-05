@@ -60,10 +60,10 @@ const HomeScreen = () => {
   ]);
 
   const [cards, setCards] = useState<Card[]>([
-    {name: 'John Doe', amount: 10},
-    {name: 'John Doe', amount: 20},
-    {name: 'John Doe', amount: 30},
-    {name: '', amount: 0},
+    {name: 'John Doe', amount: 10, isLastCard: false},
+    {name: 'John Doe', amount: 20, isLastCard: false},
+    {name: 'John Doe', amount: 30, isLastCard: false},
+    {name: '', amount: 0, isLastCard: true},
   ]);
 
   const [showModalPayment, setShowModalPayment] = useState(false);
@@ -80,7 +80,7 @@ const HomeScreen = () => {
               <CardItem
                 name={item.name}
                 amount={item.amount}
-                isLastCard={index === cards.length - 1}
+                isLastCard={item.isLastCard}
               />
             )}
             sliderWidth={310}
@@ -89,6 +89,7 @@ const HomeScreen = () => {
             itemWidth={300}
             layout="tinder"
             layoutCardOffset={9}
+            loop
           />
         </View>
         <View style={{flex: 1}}>

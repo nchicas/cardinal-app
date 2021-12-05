@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -21,6 +21,8 @@ import {colors} from '../utils.tsx/colors';
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const {token, dispatch} = useStoreon<States, Events>('token');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="Sign in" showGoBack={false} showOption={false} />
@@ -35,8 +37,17 @@ const LoginScreen = () => {
           style={{height: 160, width: 200, alignSelf: 'center', margin: 10}}
         />
         <View style={{flex: 1, justifyContent: 'center'}}>
-          <Input placeholder="Email" />
-          <Input placeholder="Password" isPassword />
+          <Input
+            placeholder="Email"
+            value={email}
+            onValueChange={v => setEmail(v)}
+          />
+          <Input
+            placeholder="Password"
+            isPassword
+            value={password}
+            onValueChange={v => setPassword(v)}
+          />
           <View
             style={{flexDirection: 'row', width: '100%', marginVertical: 10}}>
             <View style={{flex: 1}} />

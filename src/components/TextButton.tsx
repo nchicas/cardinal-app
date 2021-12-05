@@ -9,11 +9,17 @@ type PropsInput = {
   text?: string;
   size?: number;
   color?: string;
+  onPress?: () => void;
 };
 
-const TextButton = ({text = '', size = 20, color = '#000000'}: PropsInput) => {
+const TextButton = ({
+  text = '',
+  size = 20,
+  color = '#000000',
+  onPress = () => {},
+}: PropsInput) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Text style={[styles.title, {fontSize: size}, {color: color}]}>
         {text}
       </Text>

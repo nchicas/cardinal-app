@@ -12,15 +12,15 @@ import {colors} from '../utils.tsx/colors';
 import DropShadow from 'react-native-drop-shadow';
 import LoginTitle from '../components/LoginTitle';
 
-const SignupScreen = () => {
+const RecoveryPassScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <SafeAreaView style={styles.container}>
-      <Toolbar title="Sign up" showOption={false} />
+      <Toolbar title="Recovery" showOption={false} />
       <View style={styles.content}>
         <LoginTitle
           title="Welcome"
-          subtitle="Hello there, sign up to continue"
+          subtitle="Hello there, recovery to continue"
         />
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
@@ -30,15 +30,10 @@ const SignupScreen = () => {
                   flex: 1,
                   alignItems: 'center',
                 }}>
-                <Input label="First Name" />
-                <Input label="Last Name" />
                 <Input label="Username" />
-                <Input label="Email" />
-                <Input label="Password" isPassword />
-                <Input label="Repeat Password" isPassword />
               </View>
             </ScrollView>
-            <Button text="Sign up" onPress={() => navigation.goBack()} />
+            <Button text="Confirm" onPress={() => navigation.goBack()} />
           </View>
         </View>
       </View>
@@ -99,4 +94,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignupScreen;
+export default RecoveryPassScreen;

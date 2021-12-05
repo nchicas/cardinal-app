@@ -44,6 +44,7 @@ const LoginScreen = () => {
               text="Forgot your password ?"
               size={12}
               color={colors.textGray}
+              onPress={() => navigation.navigate('RecoveryPassScreen')}
             />
           </View>
           <Button text="Sign in" onPress={() => dispatch('setToken', 'test')} />

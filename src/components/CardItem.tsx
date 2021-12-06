@@ -33,7 +33,9 @@ const CardItem = ({name, amount, isLastCard}: Props) => {
           </View>
         </View>
       ) : (
-        <>
+        <TouchableOpacity
+          style={{flex: 1}}
+          onPress={() => navigation.navigate('DetailCardScreen')}>
           <Text style={styles.title}>{name}</Text>
           <View style={{flex: 1}} />
           <View>
@@ -41,7 +43,7 @@ const CardItem = ({name, amount, isLastCard}: Props) => {
             <Text style={styles.code}>*************6666</Text>
             <Text style={styles.amount}>{`$${amount}`}</Text>
           </View>
-        </>
+        </TouchableOpacity>
       )}
     </View>
   );

@@ -1,5 +1,7 @@
+import {useNavigation} from '@react-navigation/core';
+import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';
 
@@ -14,8 +16,11 @@ const TransactionItem = ({
   description,
   amount,
 }: TransactionItemProps) => {
+  const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => navigation.navigate('DetailTransactionScreen')}>
       <View style={styles.iconContainer}>
         <Icon name="water-sharp" size={20} color={colors.whith} />
       </View>
@@ -24,7 +29,7 @@ const TransactionItem = ({
         <Text style={styles.description}>{description}</Text>
       </View>
       <Text style={styles.mount}>{amount}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 

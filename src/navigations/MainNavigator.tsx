@@ -5,6 +5,8 @@ import CreateCardScreen from '../screens/CreateCardScreen';
 import HomeScreen from '../screens/HomeScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import DetailCardScreen from '../screens/DetailCardScreen';
+import DetailTransactionScreen from '../screens/DetailTransactionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +21,11 @@ const MainNavigator = () => {
       <Stack.Screen
         name="ChangePasswordScreen"
         component={ChangePasswordScreen}
+      />
+      <Stack.Screen name="DetailCardScreen" component={DetailCardScreen} />
+      <Stack.Screen
+        name="DetailTransactionScreen"
+        component={DetailTransactionScreen}
       />
     </Stack.Navigator>
   );

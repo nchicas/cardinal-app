@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
+import axios from 'axios';
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -10,7 +11,9 @@ import {
   Text,
 } from 'react-native';
 import {useStoreon} from 'storeon/react';
+import {loginService} from '../api/login';
 import Button from '../components/Button';
+import ErrorModal from '../components/ErrorModal';
 import Input from '../components/Input';
 import LoginTitle from '../components/LoginTitle';
 import TextButton from '../components/TextButton';
@@ -20,9 +23,33 @@ import {colors} from '../utils.tsx/colors';
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
+  const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
   const {token, dispatch} = useStoreon<States, Events>('token');
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorModal, setErrorModal] = useState({show: false, message: ''});
+
+  const login = async () => {
+    if (email && password) {
+      try {
+        busyDispatch('setIsBusy', true);
+        var response = await loginService(
+          email,
+          password,
+          'pehkymj53enfdjalzdbrext5kd415xbq1ewekwbd',
+        );
+        busyDispatch('setIsBusy', false);
+        dispatch('setToken', response.data.token);
+      } catch (error) {
+        busyDispatch('setIsBusy', false);
+        if (axios.isAxiosError(error)) {
+          setErrorModal({message: error.response?.data.message, show: true});
+        }
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Toolbar title="Sign in" showGoBack={false} showOption={false} />
@@ -58,7 +85,7 @@ const LoginScreen = () => {
               onPress={() => navigation.navigate('RecoveryPassScreen')}
             />
           </View>
-          <Button text="Sign in" onPress={() => dispatch('setToken', 'test')} />
+          <Button text="Sign in" onPress={() => login()} />
           <Image
             source={require('../assets/finger.png')}
             style={{
@@ -80,6 +107,12 @@ const LoginScreen = () => {
           </View>
         </View>
       </View>
+      <ErrorModal
+        show={errorModal.show}
+        title="Sign up"
+        description={errorModal.message}
+        onCancel={() => setErrorModal({show: false, message: ''})}
+      />
     </SafeAreaView>
   );
 };

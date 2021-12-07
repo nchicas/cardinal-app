@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, SectionList, Text} from 'react-native';
 import TransactionItem from '../components/TransactionItem';
 
@@ -26,6 +26,7 @@ import ErrorModal from '../components/ErrorModal';
 
 const HomeScreen = () => {
   const {token, dispatch} = useStoreon<States, Events>('token');
+  const {cardsData} = useStoreon<States, Events>('cardsData');
   const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
 
   const [errorModal, setErrorModal] = useState({show: false, message: ''});
@@ -41,30 +42,34 @@ const HomeScreen = () => {
     try {
       busyDispatch('setIsBusy', true);
       var response = await getCardsService(token);
-      if (response.data.cards) {
-        var newCards: Card[] = response.data.cards.map(value => {
-          return {
-            name: value.name_on_card,
-            cardNumber: value.bank_card_number,
-            amount: 0,
-            isLastCard: false,
-            cardRaw: value,
-          };
-        });
-        newCards.push({
-          name: '',
-          cardNumber: '',
+      var newCards: Card[] = response.data.cards.map(value => {
+        return {
+          name: value.name_on_card,
+          cardNumber: value.bank_card_number,
           amount: 0,
-          cardRaw: undefined,
-          isLastCard: true,
-        });
-        setCards(newCards);
-        setSelectedCard(newCards[0]);
-        if (newCards[0]?.cardRaw?.account?.id) {
-          loadTransaction(newCards[0]?.cardRaw?.account?.id);
-        } else {
-          busyDispatch('setIsBusy', false);
+          isLastCard: false,
+          cardRaw: value,
+        };
+      });
+      newCards = newCards.filter(e => {
+        if (e.cardNumber?.length > 4) {
+          return e;
         }
+      });
+
+      newCards = [...newCards, ...cardsData];
+      newCards.push({
+        name: '',
+        cardNumber: '',
+        amount: 0,
+        cardRaw: undefined,
+        isLastCard: true,
+      });
+      setCards(newCards);
+
+      setSelectedCard(newCards[0]);
+      if (newCards[0]?.cardRaw?.account?.id) {
+        loadTransaction(newCards[0]?.cardRaw?.account?.id);
       } else {
         busyDispatch('setIsBusy', false);
       }
@@ -122,8 +127,13 @@ const HomeScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       loadCards();
-    }, []),
+      console.log('c', cardsData.length);
+    }, [cardsData]),
   );
+
+  useEffect(() => {
+    console.log('dasdb', cardsData.length);
+  }, [cardsData]);
 
   return (
     <View style={styles.container}>
@@ -148,7 +158,6 @@ const HomeScreen = () => {
             itemWidth={300}
             layout="tinder"
             layoutCardOffset={9}
-            loop
             onSnapToItem={sliderIndex => {
               const c = cards[sliderIndex];
               setSelectedCard(c);
@@ -187,7 +196,7 @@ const HomeScreen = () => {
       />
       <ConfirmationModal
         title="New payment"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac est ipsum. Nulla dolor justo, vestibulum auctor felis nec, aliquam molestie erat. Donec ligula libero, dictum id leo eget, consectetur posuere quam. Pellentesque pellentesque nisi vel justo faucibus porta."
+        description="You can now make payments and transfer using the code:"
         show={showModalPayment}
         onValidated={() => setShowModalPayment(false)}
         onCancel={() => setShowModalPayment(false)}

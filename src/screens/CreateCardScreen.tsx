@@ -18,10 +18,13 @@ import {createAccount, getCustomerId, getUserId} from '../api/account';
 import {createCardsService} from '../api/cards';
 import {createTagService} from '../api/tags';
 import {smartContractService} from '../api/smartContract';
+import moment from 'moment';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const CreateCardScreen = () => {
   const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
   const {token, dispatch} = useStoreon<States, Events>('token');
+  const {dispatch: dispatchCard} = useStoreon<States, Events>('cardsData');
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const [showModalCard, setShowModalCard] = useState(false);
   const [errorModal, setErrorModal] = useState({
@@ -30,7 +33,7 @@ const CreateCardScreen = () => {
     isFinish: false,
   });
   const [code, setCode] = useState('');
-
+  const [name, setName] = useState('');
   const generateRandom = () => {
     let nc = '';
     for (var i = 0; i < 19; ++i) {
@@ -119,36 +122,67 @@ const CreateCardScreen = () => {
           <View style={styles.cardContainer}>
             <View style={{alignItems: 'center', paddingTop: 10}}>
               <CardItem
-                name="John Doe"
+                name="New Card"
                 amount={0}
                 isLastCard={false}
                 cardNumber=""
               />
             </View>
-            <View style={{flex: 1, paddingTop: 10}}>
+            <ScrollView style={{flex: 1, paddingTop: 10}}>
+              <Input
+                label="Name card"
+                value={name}
+                onValueChange={v => setName(v)}
+              />
               <Input
                 label="Wallet address"
                 value={code}
                 onValueChange={v => setCode(v)}
               />
-            </View>
+            </ScrollView>
             <Button text="Sign up" onPress={() => setShowModalCard(true)} />
           </View>
         </View>
       </View>
       <ConfirmationModal
         title="New card"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac est ipsum. Nulla dolor justo, vestibulum auctor felis nec, aliquam molestie erat. Donec ligula libero, dictum id leo eget, consectetur posuere quam. Pellentesque pellentesque nisi vel justo faucibus porta."
+        description="We start the process to create a card. This will take a few seconds"
         show={showModalCard}
-        onValidated={() => {
+        onValidated={async () => {
           setShowModalCard(false);
-          createCards();
+
+          setTimeout(() => {
+            busyDispatch('setIsBusy', true);
+            const ct = generateRandom();
+            const smartContract = generateRandom();
+            dispatchCard('addCard', {
+              name: 'Test',
+              cardNumber: ct,
+              amount: 0,
+              cardRaw: {
+                bank_card_number: ct,
+                name_on_card: name,
+                expires_date: moment().year(2022).toDate(),
+                extra: smartContract,
+              },
+              isLastCard: false,
+              smartContract: smartContract,
+            });
+            setTimeout(() => {
+              busyDispatch('setIsBusy', false);
+              setErrorModal({
+                message: `You can now make payments and transfer using the code: ${smartContract}`,
+                show: true,
+                isFinish: true,
+              });
+            }, 5000);
+          }, 500);
         }}
         onCancel={() => setShowModalCard(false)}
       />
       <ErrorModal
         show={errorModal.show}
-        title="Sign in"
+        title="Create card"
         description={errorModal.message}
         onCancel={() => {
           if (errorModal.isFinish) {

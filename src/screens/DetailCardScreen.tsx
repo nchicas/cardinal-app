@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -41,6 +41,10 @@ const DetailCardScreen = ({route}: Props) => {
                 disableTouch={true}
               />
             </View>
+            <Text
+              style={
+                styles.text
+              }>{`You can now make payments and transfer using the code: ${parameters?.extra}`}</Text>
             <ScrollView>
               <View
                 style={{
@@ -49,6 +53,13 @@ const DetailCardScreen = ({route}: Props) => {
                   marginHorizontal: 10,
                   marginBottom: 2,
                 }}>
+                {parameters?.extra && (
+                  <CardItemCopy
+                    title="Contract"
+                    value={parameters?.extra}
+                    rawValue={parameters?.extra}
+                  />
+                )}
                 <CardItemCopy
                   title="Code"
                   value={parameters?.name_on_card}
@@ -77,6 +88,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.primary,
+  },
+  text: {
+    padding: 0,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 12,
+    color: colors.textGray,
+    marginTop: 10,
+    textAlign: 'center',
   },
   content: {
     backgroundColor: '#FFFFFF',

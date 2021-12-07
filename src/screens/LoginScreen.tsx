@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import axios from 'axios';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Image,
   Text,
+  Platform,
 } from 'react-native';
 import {useStoreon} from 'storeon/react';
 import {loginService} from '../api/login';
@@ -21,15 +22,51 @@ import Toolbar from '../components/Toolbar';
 import {States, Events} from '../store/store';
 import {colors} from '../utils.tsx/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FingerprintScanner from 'react-native-fingerprint-scanner';
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
   const {token, dispatch} = useStoreon<States, Events>('token');
+  const {dispatch: passwordDispatch} = useStoreon<States, Events>('password');
+  const {dispatch: usernameDispatch} = useStoreon<States, Events>('username');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [enableLoginBiometric, setEnableLoginBiometric] = useState(false);
   const [errorModal, setErrorModal] = useState({show: false, message: ''});
+
+  const requireLegacyBiometric = () => {
+    return Platform.Version < 23;
+  };
+
+  const authCurrent = () => {
+    FingerprintScanner.authenticate({title: 'Log in with Biometrics'})
+      .then(() => {
+        loginBiometric();
+      })
+      .catch(error => {
+        if (error instanceof Error) {
+          setErrorModal({show: true, message: error.message});
+        }
+      });
+  };
+
+  const authLegacy = () => {
+    FingerprintScanner.authenticate({
+      onAttempt: error => {
+        setErrorModal({show: true, message: error.message});
+      },
+    })
+      .then(() => {
+        loginBiometric();
+      })
+      .catch(error => {
+        if (error instanceof Error) {
+          setErrorModal({show: true, message: error.message});
+        }
+      });
+  };
 
   const login = async () => {
     if (email && password) {
@@ -41,7 +78,13 @@ const LoginScreen = () => {
           'pehkymj53enfdjalzdbrext5kd415xbq1ewekwbd',
         );
         busyDispatch('setIsBusy', false);
-        await AsyncStorage.setItem('token', response.data.token);
+        AsyncStorage.multiSet([
+          ['token', response.data.token],
+          ['password', password],
+          ['username', email],
+        ]);
+        dispatch('setUsername', email);
+        dispatch('setPassword', password);
         dispatch('setToken', response.data.token);
       } catch (error) {
         busyDispatch('setIsBusy', false);
@@ -51,6 +94,44 @@ const LoginScreen = () => {
       }
     }
   };
+
+  const loginBiometric = async () => {
+    console.log('ERRROR');
+
+    const emailSave = await AsyncStorage.getItem('username');
+
+    const passwordSave = await AsyncStorage.getItem('password');
+    console.log('email', emailSave);
+    console.log('pass', password);
+    if (emailSave && passwordSave) {
+      try {
+        busyDispatch('setIsBusy', true);
+        var response = await loginService(
+          emailSave,
+          passwordSave,
+          'pehkymj53enfdjalzdbrext5kd415xbq1ewekwbd',
+        );
+        busyDispatch('setIsBusy', false);
+        await AsyncStorage.setItem('token', response.data.token);
+        dispatch('setUsername', emailSave);
+        dispatch('setPassword', passwordSave);
+        dispatch('setToken', response.data.token);
+      } catch (error) {
+        busyDispatch('setIsBusy', false);
+        if (axios.isAxiosError(error)) {
+          setErrorModal({message: error.response?.data.message, show: true});
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      var enable = await AsyncStorage.getItem('enableLoginBiometric');
+      setEnableLoginBiometric(Boolean(enable));
+    };
+    load();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,15 +169,26 @@ const LoginScreen = () => {
             />
           </View>
           <Button text="Sign in" onPress={() => login()} />
-          <Image
-            source={require('../assets/finger.png')}
-            style={{
-              height: 64,
-              width: 64,
-              marginVertical: 10,
-              alignSelf: 'center',
-            }}
-          />
+          {enableLoginBiometric && (
+            <TouchableOpacity
+              onPress={() => {
+                if (requireLegacyBiometric()) {
+                  authLegacy();
+                } else {
+                  authCurrent();
+                }
+              }}>
+              <Image
+                source={require('../assets/finger.png')}
+                style={{
+                  height: 64,
+                  width: 64,
+                  marginVertical: 10,
+                  alignSelf: 'center',
+                }}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View>
           <View style={styles.fooderContainer}>

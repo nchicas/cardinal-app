@@ -13,6 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Load = () => {
   const {token, dispatch} = useStoreon<States, Events>('token');
+  const {username} = useStoreon<States, Events>('password');
+  const {password} = useStoreon<States, Events>('username');
   const {isBusy, dispatch: isBusyDispatch} = useStoreon<States, Events>(
     'isBusy',
   );
@@ -23,9 +25,11 @@ const Load = () => {
       try {
         isBusyDispatch('setIsBusy', true);
         var responseToken = await AsyncStorage.getItem('token');
-        if (responseToken) {
-          dispatch('setToken', responseToken!);
-        }
+        var usernameToken = await AsyncStorage.getItem('username');
+        var passwordToken = await AsyncStorage.getItem('password');
+        dispatch('setToken', responseToken!);
+        dispatch('setPassword', passwordToken!);
+        dispatch('setUsername', usernameToken!);
         isBusyDispatch('setIsBusy', false);
         setLoadingData(false);
       } catch (error) {

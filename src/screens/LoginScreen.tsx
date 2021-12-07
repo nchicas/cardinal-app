@@ -20,6 +20,7 @@ import TextButton from '../components/TextButton';
 import Toolbar from '../components/Toolbar';
 import {States, Events} from '../store/store';
 import {colors} from '../utils.tsx/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
@@ -40,6 +41,7 @@ const LoginScreen = () => {
           'pehkymj53enfdjalzdbrext5kd415xbq1ewekwbd',
         );
         busyDispatch('setIsBusy', false);
+        await AsyncStorage.setItem('token', response.data.token);
         dispatch('setToken', response.data.token);
       } catch (error) {
         busyDispatch('setIsBusy', false);

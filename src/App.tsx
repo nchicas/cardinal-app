@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 
@@ -9,13 +9,36 @@ import AuthNavigator from './navigations/AuthNavigator';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {StyleSheet} from 'react-native';
 import {colors} from './utils.tsx/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Load = () => {
-  const {token} = useStoreon<States, Events>('token');
-  const {isBusy} = useStoreon<States, Events>('isBusy');
+  const {token, dispatch} = useStoreon<States, Events>('token');
+  const {isBusy, dispatch: isBusyDispatch} = useStoreon<States, Events>(
+    'isBusy',
+  );
+  const [loadingData, setLoadingData] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        isBusyDispatch('setIsBusy', true);
+        var responseToken = await AsyncStorage.getItem('token');
+        if (responseToken) {
+          dispatch('setToken', responseToken!);
+        }
+        isBusyDispatch('setIsBusy', false);
+        setLoadingData(false);
+      } catch (error) {
+        isBusyDispatch('setIsBusy', false);
+        setLoadingData(false);
+      }
+    };
+    load();
+  }, []);
+
   return (
     <NavigationContainer>
-      {token ? <MainNavigator /> : <AuthNavigator />}
+      {!loadingData && (token ? <MainNavigator /> : <AuthNavigator />)}
       <Spinner
         visible={isBusy}
         textContent={'Loading...'}

@@ -10,6 +10,7 @@ import CardButton from '../components/CardButton';
 import CardPicker from '../components/CardPicker';
 import {useStoreon} from 'storeon/react';
 import {States, Events} from '../store/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
@@ -29,7 +30,13 @@ const SettingsScreen = () => {
                 onPress={() => setEnableBiometric(!enableBiometric)}
               />
             </View>
-            <Button text="Sign out" onPress={() => dispatch('setToken', '')} />
+            <Button
+              text="Sign out"
+              onPress={async () => {
+                await AsyncStorage.clear();
+                dispatch('setToken', '');
+              }}
+            />
           </View>
         </View>
       </View>

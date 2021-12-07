@@ -48,11 +48,11 @@ const CreateCardScreen = () => {
         'a9fdf845c08d497dbee18140ce7f30da',
         'pehkymj53enfdjalzdbrext5kd415xbq1ewekwbd',
       );
-
+      console.log('responseLogin', responseLogin.data);
       var userIdResponse = await getUserId(token);
       console.log('userIdResponse', userIdResponse.data);
 
-      var customerIdResponse = await getCustomerId(responseLogin.data.token);
+      var customerIdResponse = await getCustomerId(token);
       console.log('customerIdResponse', customerIdResponse.data);
 
       var accountCreateResponse = await createAccount(
@@ -87,7 +87,7 @@ const CreateCardScreen = () => {
       var tagSmartContract = await createTagService(
         token,
         accountCreateResponse.data.account_id,
-        'SMART CONTRACT',
+        smartContractResponse.data.contract_address,
       );
       console.log('tagSmartContract', tagSmartContract.data);
 
@@ -96,6 +96,7 @@ const CreateCardScreen = () => {
         show: true,
         isFinish: true,
       });
+      busyDispatch('setIsBusy', false);
     } catch (error) {
       busyDispatch('setIsBusy', false);
       if (axios.isAxiosError(error)) {
@@ -141,7 +142,7 @@ const CreateCardScreen = () => {
         show={showModalCard}
         onValidated={() => {
           setShowModalCard(false);
-          navigation.goBack();
+          createCards();
         }}
         onCancel={() => setShowModalCard(false)}
       />

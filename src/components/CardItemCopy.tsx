@@ -2,22 +2,27 @@ import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../utils.tsx/colors';
+import Clipboard from '@react-native-clipboard/clipboard';
+
 
 export type Props = {
   title: string;
   value: string;
+  rawValue: string;
   icon?: string;
-  onPress?: () => void;
 };
 
 const CardItemCopy = ({
   title,
-  value,
+  value = "",
   icon = 'clipboard',
-  onPress = () => {},
 }: Props) => {
   return (
-    <TouchableOpacity style={styles.cardShadow} onPress={onPress}>
+    <TouchableOpacity style={styles.cardShadow} onPress={() => {
+      if(value){
+        Clipboard.setString(value)
+      }
+    }}>
       <View style={styles.cardContainer}>
         <View style={{flex: 1}}>
           <Text style={styles.text}>{title}</Text>

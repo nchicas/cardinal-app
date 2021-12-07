@@ -13,15 +13,15 @@ import Carousel from 'react-native-snap-carousel';
 import CardItem from '../components/CardItem';
 import Card from '../models/Card';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { getCardsService } from '../api/cards';
-import { useStoreon } from 'storeon/react';
-import { States, Events } from '../store/store';
+import {getCardsService} from '../api/cards';
+import {useStoreon} from 'storeon/react';
+import {States, Events} from '../store/store';
 import axios from 'axios';
-import { useFocusEffect } from '@react-navigation/core';
-import { getTransactionService } from '../api/transaction';
+import {useFocusEffect} from '@react-navigation/core';
+import {getTransactionService} from '../api/transaction';
 import Transaction from '../models/Transaction';
 import moment from 'moment';
-import lodash from 'lodash'
+import lodash from 'lodash';
 import ErrorModal from '../components/ErrorModal';
 
 const HomeScreen = () => {
@@ -29,87 +29,100 @@ const HomeScreen = () => {
   const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
 
   const [errorModal, setErrorModal] = useState({show: false, message: ''});
-  const [transactions, setTransactions] = useState<TransactionCategory[]>([
-    
-  ]);
+  const [transactions, setTransactions] = useState<TransactionCategory[]>([]);
 
-  const [cards, setCards] = useState<Card[]>([
-  ]);
+  const [cards, setCards] = useState<Card[]>([]);
 
-  const [selectedCard, setSelectedCard] = useState<Card>()
+  const [selectedCard, setSelectedCard] = useState<Card>();
 
   const [showModalPayment, setShowModalPayment] = useState(false);
 
   const loadCards = async () => {
     try {
-      busyDispatch('setIsBusy', true)
-      var response = await getCardsService(token)
-      if(response.data.cards){
-        var newCards: Card[] = response.data.cards.map((value ) => {
-          return {name: value.name_on_card, cardNumber: value.bank_card_number, amount: 0, isLastCard:false, cardRaw: value}
-        })
-        newCards.push({name: '', cardNumber: '', amount: 0, cardRaw: undefined, isLastCard: true  })
-        setCards(newCards)
-        setSelectedCard(newCards[0])
+      busyDispatch('setIsBusy', true);
+      var response = await getCardsService(token);
+      if (response.data.cards) {
+        var newCards: Card[] = response.data.cards.map(value => {
+          return {
+            name: value.name_on_card,
+            cardNumber: value.bank_card_number,
+            amount: 0,
+            isLastCard: false,
+            cardRaw: value,
+          };
+        });
+        newCards.push({
+          name: '',
+          cardNumber: '',
+          amount: 0,
+          cardRaw: undefined,
+          isLastCard: true,
+        });
+        setCards(newCards);
+        setSelectedCard(newCards[0]);
+        if (newCards[0]?.cardRaw?.account?.id) {
+          loadTransaction(newCards[0]?.cardRaw?.account?.id);
+        } else {
+          busyDispatch('setIsBusy', false);
+        }
+      } else {
+        busyDispatch('setIsBusy', false);
       }
-      busyDispatch('setIsBusy', false)
-      if(selectedCard?.cardRaw?.account?.id){
-        loadTransaction(selectedCard?.cardRaw?.account?.id)
-      }
-      
     } catch (error) {
-      busyDispatch('setIsBusy', false)
-      if(axios.isAxiosError(error)){
-        setErrorModal({show: true, message: error.message})
+      busyDispatch('setIsBusy', false);
+      if (axios.isAxiosError(error)) {
+        setErrorModal({show: true, message: error.message});
       }
     }
-  }
+  };
 
   const loadTransaction = async (userId: string) => {
     try {
-      busyDispatch('setIsBusy', true)
-      var response = await getTransactionService(token, userId)
-      if(response.data.transactions){
-        
-        var newTransactions: Transaction[] = response.data.transactions.map((value ) => {
-          return {
-            title: value.details.type, 
-            description: value.details.description,
-            amount: Number(value.details.value.amount), 
-            status: TransactionStatus.Ok,
-            date: value.details.completed,
-            dateKey: moment(value.details.completed).format('DD-MM-YYYY'),
-            dataRaw: value
-          }
-        })
-        var orderTransaction = lodash.groupBy(newTransactions, 'dateKey')
-        var tc: TransactionCategory[] = []  
+      busyDispatch('setIsBusy', true);
+      var response = await getTransactionService(token, userId);
+      if (response.data.transactions) {
+        var newTransactions: Transaction[] = response.data.transactions.map(
+          value => {
+            return {
+              title: value.details.type,
+              description: value.details.description,
+              amount: Number(value.details.value.amount),
+              status: TransactionStatus.Ok,
+              date: value.details.completed,
+              dateKey: moment(value.details.completed).format('DD-MM-YYYY'),
+              dataRaw: value,
+            };
+          },
+        );
+        var orderTransaction = lodash.groupBy(newTransactions, 'dateKey');
+        var tc: TransactionCategory[] = [];
         for (const property in orderTransaction) {
           var value = orderTransaction[property];
           var c: TransactionCategory = {
             title: property,
-            data: value
-          }
-          tc.push(c)
+            data: value,
+          };
+          tc.push(c);
         }
+        console.log(tc.length);
 
-        setTransactions(tc)
+        setTransactions(tc);
       }
-      busyDispatch('setIsBusy', false)
+      busyDispatch('setIsBusy', false);
     } catch (error) {
-      busyDispatch('setIsBusy', false)
-      if(axios.isAxiosError(error)){
+      busyDispatch('setIsBusy', false);
+      if (axios.isAxiosError(error)) {
         console.log('ERROR', error);
-        
-        setErrorModal({show: true, message: error.message})
+
+        setErrorModal({show: true, message: error.message});
       }
     }
-  }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
-      loadCards()
-    }, [])
+      loadCards();
+    }, []),
   );
 
   return (
@@ -136,11 +149,11 @@ const HomeScreen = () => {
             layout="tinder"
             layoutCardOffset={9}
             loop
-            onSnapToItem= {(sliderIndex) => {
-              const c = cards[sliderIndex]
-              setSelectedCard(c)
-              if(c.cardRaw?.account?.id){
-                loadTransaction(c.cardRaw?.account?.id)
+            onSnapToItem={sliderIndex => {
+              const c = cards[sliderIndex];
+              setSelectedCard(c);
+              if (c.cardRaw?.account?.id) {
+                loadTransaction(c.cardRaw?.account?.id);
               }
             }}
           />
@@ -185,7 +198,6 @@ const HomeScreen = () => {
         description={errorModal.message}
         onCancel={() => setErrorModal({show: false, message: ''})}
       />
-      
     </View>
   );
 };

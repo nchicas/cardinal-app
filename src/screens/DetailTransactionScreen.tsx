@@ -12,20 +12,19 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import CardItemCopy from '../components/CardItemCopy';
 import CardItemText from '../components/CardItemText';
 import {ScrollView} from 'react-native-gesture-handler';
-import { TransactionDTOItem } from '../models/TransactionDTO';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { CardItemDTO } from '../models/CardsDTO';
+import {TransactionDTOItem} from '../models/TransactionDTO';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {CardItemDTO} from '../models/CardsDTO';
 import moment from 'moment';
 
 export type DetailTransactionParam = {
-  card?: CardItemDTO,
-  transaction: TransactionDTOItem
-}
+  card?: CardItemDTO;
+  transaction: TransactionDTOItem;
+};
 
 type RootStackParamList = {
   HomeScreen: DetailTransactionParam;
 };
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
 
@@ -34,7 +33,7 @@ const DetailTransactionScreen = ({route}: Props) => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const [showModalCard, setShowModalCard] = useState(false);
   const [code, setCode] = useState('');
-console.log(parameters.card?.bank_card_number);
+  console.log(parameters.card?.bank_card_number);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,11 +42,21 @@ console.log(parameters.card?.bank_card_number);
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
             <View style={{alignItems: 'center', paddingTop: 10}}>
-              <CardItem 
-              name={parameters?.card?.name_on_card ? parameters.card.name_on_card : ''} 
-              amount={0} 
-              isLastCard={false} 
-              cardNumber={parameters?.card?.bank_card_number ? parameters.card.bank_card_number : 'None'} />
+              <CardItem
+                name={
+                  parameters?.card?.name_on_card
+                    ? parameters.card.name_on_card
+                    : ''
+                }
+                amount={0}
+                isLastCard={false}
+                cardNumber={
+                  parameters?.card?.bank_card_number
+                    ? parameters.card.bank_card_number
+                    : 'None'
+                }
+                disableTouch={true}
+              />
             </View>
 
             <ScrollView style={{flex: 1}}>
@@ -69,21 +78,34 @@ console.log(parameters.card?.bank_card_number);
                     value={parameters.transaction.details.type}
                     style={{flex: 1}}
                   />
-                  <Text style={styles.amount}> {parameters.transaction.details.value.amount}</Text>
+                  <Text style={styles.amount}>
+                    {' '}
+                    {parameters.transaction.details.value.amount}
+                  </Text>
                 </View>
                 <CardItemText
                   title="Description"
                   value={parameters.transaction.details.description}
                   style={{}}
                 />
-                <CardItemText title="Date" value={moment(parameters.transaction.details.posted).format('DD/MM/YY')} style={{}} />
+                <CardItemText
+                  title="Date"
+                  value={moment(parameters.transaction.details.posted).format(
+                    'DD/MM/YY',
+                  )}
+                  style={{}}
+                />
                 <Text style={styles.title}>More information</Text>
                 <CardItemCopy
                   title="Id"
                   value={parameters.transaction.id}
+                  rawValue={parameters.transaction.id}
                 />
-                <CardItemCopy title="Other account" value={parameters.transaction.other_account.id} />
-
+                <CardItemCopy
+                  title="Other account"
+                  value={parameters.transaction.other_account.id}
+                  rawValue={parameters.transaction.other_account.id}
+                />
               </View>
             </ScrollView>
           </View>

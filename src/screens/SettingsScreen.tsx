@@ -28,12 +28,6 @@ const SettingsScreen = () => {
                 selected={enableBiometric}
                 onPress={() => setEnableBiometric(!enableBiometric)}
               />
-
-              <CardButton
-                text="Change password"
-                icon="chevron-forward-sharp"
-                onPress={() => navigation.navigate('ChangePasswordScreen')}
-              />
             </View>
             <Button text="Sign out" onPress={() => dispatch('setToken', '')} />
           </View>

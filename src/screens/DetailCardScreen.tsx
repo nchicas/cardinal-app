@@ -10,14 +10,13 @@ import {colors} from '../utils.tsx/colors';
 import CardItem from '../components/CardItem';
 import ConfirmationModal from '../components/ConfirmationModal';
 import CardItemCopy from '../components/CardItemCopy';
-import { CardItemDTO } from '../models/CardsDTO';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import {CardItemDTO} from '../models/CardsDTO';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import moment from 'moment';
 
 type RootStackParamList = {
   HomeScreen: CardItemDTO;
 };
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
 
@@ -34,7 +33,13 @@ const DetailCardScreen = ({route}: Props) => {
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
             <View style={{alignItems: 'center', paddingTop: 10}}>
-              <CardItem name={parameters.name_on_card} amount={0} isLastCard={false} cardNumber={parameters.bank_card_number} />
+              <CardItem
+                name={parameters?.name_on_card}
+                amount={0}
+                isLastCard={false}
+                cardNumber={parameters?.bank_card_number}
+                disableTouch={true}
+              />
             </View>
             <ScrollView>
               <View
@@ -44,12 +49,21 @@ const DetailCardScreen = ({route}: Props) => {
                   marginHorizontal: 10,
                   marginBottom: 2,
                 }}>
-                <CardItemCopy title="Code" value={parameters.name_on_card} />
+                <CardItemCopy
+                  title="Code"
+                  value={parameters?.name_on_card}
+                  rawValue={parameters?.name_on_card}
+                />
                 <CardItemCopy
                   title="Number card"
-                  value={parameters.bank_card_number}
+                  value={parameters?.bank_card_number}
+                  rawValue={parameters?.bank_card_number}
                 />
-                <CardItemCopy title="Expiration date" value={moment(parameters.expires_date).format('MM/YY')} />
+                <CardItemCopy
+                  title="Expiration date"
+                  value={moment(parameters?.expires_date).format('MM/YY')}
+                  rawValue={moment(parameters?.expires_date).format('MM/YY')}
+                />
               </View>
             </ScrollView>
           </View>

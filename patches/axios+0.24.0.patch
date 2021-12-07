@@ -1,0 +1,58 @@
+diff --git a/node_modules/axios/lib/adapters/http.js b/node_modules/axios/lib/adapters/http.js
+index 85f3061..31bb452 100644
+--- a/node_modules/axios/lib/adapters/http.js
++++ b/node_modules/axios/lib/adapters/http.js
+@@ -69,7 +69,7 @@ module.exports = function httpAdapter(config) {
+     var headerNames = {};
+ 
+     Object.keys(headers).forEach(function storeLowerName(name) {
+-      headerNames[name.toLowerCase()] = name;
++      headerNames[name] = name;
+     });
+ 
+     // Set User-Agent (required by some servers)
+@@ -170,7 +170,7 @@ module.exports = function httpAdapter(config) {
+               return true;
+             }
+             if (proxyElement[0] === '.' &&
+-                parsed.hostname.substr(parsed.hostname.length - proxyElement.length) === proxyElement) {
++              parsed.hostname.substr(parsed.hostname.length - proxyElement.length) === proxyElement) {
+               return true;
+             }
+ 
+@@ -236,16 +236,16 @@ module.exports = function httpAdapter(config) {
+       // if no content, is HEAD request or decompress disabled we should not decompress
+       if (res.statusCode !== 204 && lastRequest.method !== 'HEAD' && config.decompress !== false) {
+         switch (res.headers['content-encoding']) {
+-        /*eslint default-case:0*/
+-        case 'gzip':
+-        case 'compress':
+-        case 'deflate':
+-        // add the unzipper to the body stream processing pipeline
+-          stream = stream.pipe(zlib.createUnzip());
+-
+-          // remove the content-encoding in order to not confuse downstream operations
+-          delete res.headers['content-encoding'];
+-          break;
++          /*eslint default-case:0*/
++          case 'gzip':
++          case 'compress':
++          case 'deflate':
++            // add the unzipper to the body stream processing pipeline
++            stream = stream.pipe(zlib.createUnzip());
++
++            // remove the content-encoding in order to not confuse downstream operations
++            delete res.headers['content-encoding'];
++            break;
+         }
+       }
+ 
+@@ -337,7 +337,7 @@ module.exports = function httpAdapter(config) {
+     if (config.cancelToken || config.signal) {
+       // Handle cancellation
+       // eslint-disable-next-line func-names
+-      onCanceled = function(cancel) {
++      onCanceled = function (cancel) {
+         if (req.aborted) return;
+ 
+         req.abort();

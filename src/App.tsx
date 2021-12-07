@@ -1,32 +1,44 @@
 import React from 'react';
 
-import CardsScreen from './screens/CardsScreen';
-import * as Animatable from 'react-native-animatable';
-import HomeScreen from './screens/HomeScreen';
-import {View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
 
-const Stack = createSharedElementStackNavigator();
+import {StoreContext, useStoreon} from 'storeon/react';
+import store, {Events, States} from './store/store';
+import MainNavigator from './navigations/MainNavigator';
+import AuthNavigator from './navigations/AuthNavigator';
+import Spinner from 'react-native-loading-spinner-overlay';
+import {StyleSheet} from 'react-native';
+import {colors} from './utils.tsx/colors';
 
-const App = () => {
+const Load = () => {
+  const {token} = useStoreon<States, Events>('token');
+  const {isBusy} = useStoreon<States, Events>('isBusy');
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="HomeScreen"
-        screenOptions={{headerShown: false}}>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen
-          name="CardsScreen"
-          component={CardsScreen}
-          sharedElements={(route, otherRoute, showing) => {
-            const {item} = route.params;
-            return [`CARD`];
-          }}
-        />
-      </Stack.Navigator>
+      {token ? <MainNavigator /> : <AuthNavigator />}
+      <Spinner
+        visible={isBusy}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+      />
     </NavigationContainer>
   );
 };
+
+const App = () => {
+  return (
+    <StoreContext.Provider value={store}>
+      <Load />
+    </StoreContext.Provider>
+  );
+};
+
+const styles = StyleSheet.create({
+  spinnerTextStyle: {
+    fontFamily: 'Poppins-Bold',
+    fontSize: 16,
+    color: colors.textBlack,
+  },
+});
 
 export default App;

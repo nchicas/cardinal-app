@@ -1,207 +1,203 @@
 import React, {useState} from 'react';
-import {
-  Animated,
-  StyleSheet,
-  View,
-  Dimensions,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import GestureRecognizer from 'react-native-swipe-gestures';
-import CreditCard from 'react-native-credit-card-v2';
-import Toolbar2 from '../components/Toolbar2';
-import {Text} from 'react-native-animatable';
+import {StyleSheet, View, SectionList, Text} from 'react-native';
 import TransactionItem from '../components/TransactionItem';
-import {SharedElement} from 'react-navigation-shared-element';
 
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {useNavigation} from '@react-navigation/native';
+import Toolbar from '../components/Toolbar';
+import {colors} from '../utils.tsx/colors';
+import {FloatingAction} from 'react-native-floating-action';
+import Icon from 'react-native-vector-icons/Ionicons';
+import TransactionCategory from '../models/TransactionCategory';
+import TransactionStatus from '../enums/TransactionStatus';
+import TransactionItemHeader from '../components/TransactionItemHeader';
+import Carousel from 'react-native-snap-carousel';
+import CardItem from '../components/CardItem';
+import Card from '../models/Card';
+import ConfirmationModal from '../components/ConfirmationModal';
+import {getCardsService} from '../api/cards';
+import {useStoreon} from 'storeon/react';
+import {States, Events} from '../store/store';
+import axios from 'axios';
+import {useFocusEffect} from '@react-navigation/core';
+import {getTransactionService} from '../api/transaction';
+import Transaction from '../models/Transaction';
+import moment from 'moment';
+import lodash from 'lodash';
+import ErrorModal from '../components/ErrorModal';
 
-type Props = NativeStackScreenProps<any, any>;
+const HomeScreen = () => {
+  const {token, dispatch} = useStoreon<States, Events>('token');
+  const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
 
-const HomeScreen = ({navigation}: Props) => {
-  const [cardJumpingAnimation1] = useState(new Animated.Value(0));
-  const [cardJumpingAnimation2] = useState(new Animated.Value(10));
-  const [cardJumpingAnimation3] = useState(new Animated.Value(20));
-  const [cardComtainerHeight] = useState(new Animated.Value(220));
-  const [cardHeight] = useState(new Animated.Value(200));
-  const [selected, setSelected] = useState(0);
+  const [errorModal, setErrorModal] = useState({show: false, message: ''});
+  const [transactions, setTransactions] = useState<TransactionCategory[]>([]);
 
-  const images = [
-    require('../assets/c1.png'),
-    require('../assets/c2.png'),
-    require('../assets/c3.png'),
-    require('../assets/c4.png'),
-    require('../assets/c5.png'),
-  ];
-  const [cards, setCards] = useState({
-    c1: {
-      bg: images[selected],
-    },
-    c2: {
-      bg: images[selected + 1],
-    },
-    c3: {
-      bg: images[selected + 2],
-    },
-  });
+  const [cards, setCards] = useState<Card[]>([]);
 
-  const windowWidth = Dimensions.get('window').width;
+  const [selectedCard, setSelectedCard] = useState<Card>();
 
-  const swipUp = () => {
-    Animated.timing(cardHeight, {
-      toValue: 100,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    Animated.timing(cardComtainerHeight, {
-      toValue: 100,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
+  const [showModalPayment, setShowModalPayment] = useState(false);
+
+  const loadCards = async () => {
+    try {
+      busyDispatch('setIsBusy', true);
+      var response = await getCardsService(token);
+      if (response.data.cards) {
+        var newCards: Card[] = response.data.cards.map(value => {
+          return {
+            name: value.name_on_card,
+            cardNumber: value.bank_card_number,
+            amount: 0,
+            isLastCard: false,
+            cardRaw: value,
+          };
+        });
+        newCards.push({
+          name: '',
+          cardNumber: '',
+          amount: 0,
+          cardRaw: undefined,
+          isLastCard: true,
+        });
+        setCards(newCards);
+        setSelectedCard(newCards[0]);
+        if (newCards[0]?.cardRaw?.account?.id) {
+          loadTransaction(newCards[0]?.cardRaw?.account?.id);
+        } else {
+          busyDispatch('setIsBusy', false);
+        }
+      } else {
+        busyDispatch('setIsBusy', false);
+      }
+    } catch (error) {
+      busyDispatch('setIsBusy', false);
+      if (axios.isAxiosError(error)) {
+        setErrorModal({show: true, message: error.message});
+      }
+    }
   };
 
-  const swipDown = () => {
-    Animated.timing(cardHeight, {
-      toValue: 200,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
+  const loadTransaction = async (userId: string) => {
+    try {
+      busyDispatch('setIsBusy', true);
+      var response = await getTransactionService(token, userId);
+      if (response.data.transactions) {
+        var newTransactions: Transaction[] = response.data.transactions.map(
+          value => {
+            return {
+              title: value.details.type,
+              description: value.details.description,
+              amount: Number(value.details.value.amount),
+              status: TransactionStatus.Ok,
+              date: value.details.completed,
+              dateKey: moment(value.details.completed).format('DD-MM-YYYY'),
+              dataRaw: value,
+            };
+          },
+        );
+        var orderTransaction = lodash.groupBy(newTransactions, 'dateKey');
+        var tc: TransactionCategory[] = [];
+        for (const property in orderTransaction) {
+          var value = orderTransaction[property];
+          var c: TransactionCategory = {
+            title: property,
+            data: value,
+          };
+          tc.push(c);
+        }
+        console.log(tc.length);
 
-    Animated.timing(cardComtainerHeight, {
-      toValue: 220,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
+        setTransactions(tc);
+      }
+      busyDispatch('setIsBusy', false);
+    } catch (error) {
+      busyDispatch('setIsBusy', false);
+      if (axios.isAxiosError(error)) {
+        console.log('ERROR', error);
+
+        setErrorModal({show: true, message: error.message});
+      }
+    }
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadCards();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
-      <Toolbar2 />
+      <Toolbar title="Transaction report" showGoBack={false} />
 
-      <GestureRecognizer
-        onSwipeUp={() => {
-          console.log('SWIPE UP');
-          swipUp();
-        }}
-        onSwipeDown={() => {
-          console.log('SWIPE DOWN');
-          swipDown();
-        }}
-        style={styles.cardsContainer}>
-        <Animated.View
-          style={{
-            width: '80%',
-            height: cardComtainerHeight,
-            alignItems: 'center',
-            overflow: 'hidden',
-          }}>
-          <Animated.View
-            style={{
-              backgroundColor: '#f7f7f7',
-              width: '90%',
-              height: cardHeight,
-              borderRadius: 12,
-              position: 'absolute',
-              transform: [{translateY: cardJumpingAnimation3}],
-              borderColor: '#f7f7f7',
-              borderWidth: 1,
-              shadowColor: '#000',
-              shadowOffset: {width: 2, height: 2},
-              shadowOpacity: 0.4,
-              marginBottom: 10,
-              elevation: 1,
+      <View style={styles.content}>
+        <View style={styles.cardContainer}>
+          <Carousel
+            data={cards}
+            renderItem={({item, index}) => (
+              <CardItem
+                name={item.name}
+                amount={item.amount}
+                cardNumber={item.cardNumber}
+                isLastCard={item.isLastCard}
+                data={item.cardRaw}
+              />
+            )}
+            sliderWidth={310}
+            sliderHeight={210}
+            itemHeight={200}
+            itemWidth={300}
+            layout="tinder"
+            layoutCardOffset={9}
+            loop
+            onSnapToItem={sliderIndex => {
+              const c = cards[sliderIndex];
+              setSelectedCard(c);
+              if (c.cardRaw?.account?.id) {
+                loadTransaction(c.cardRaw?.account?.id);
+              }
             }}
           />
-          <Animated.View
-            style={{
-              backgroundColor: '#fff',
-              width: '95%',
-              height: cardHeight,
-              borderRadius: 12,
-              position: 'absolute',
-              transform: [{translateY: cardJumpingAnimation2}],
-              borderColor: '#f7f7f7',
-              borderWidth: 1,
-              shadowColor: '#000',
-              shadowOffset: {width: 2, height: 2},
-              shadowOpacity: 0.4,
-              marginBottom: 10,
-              elevation: 1,
-            }}
-          />
-
-          <Animated.View
-            style={{
-              height: cardHeight,
-              width: '100%',
-              borderRadius: 20,
-              position: 'absolute',
-              transform: [{translateY: cardJumpingAnimation1}],
-              elevation: 2,
-              overflow: 'hidden',
-            }}>
-            <TouchableOpacity
-              style={{width: '100%'}}
-              onPress={() => navigation.navigate('CardsScreen')}>
-              <SharedElement id="CARD" style={{width: '100%'}}>
-                <CreditCard
-                  width={windowWidth * 0.8}
-                  imageFront={cards.c1.bg}
-                  mainContainerStyle={{
-                    height: cardHeight,
-                  }}
-                  clickable={false}
-                />
-              </SharedElement>
-            </TouchableOpacity>
-          </Animated.View>
-        </Animated.View>
-
-        <ScrollView style={{width: '90%', flex: 1}}>
+        </View>
+        <View style={{flex: 1}}>
           <Text style={styles.title}>Transacciones</Text>
-          <TransactionItem
-            title="Compras"
-            transactions={2}
-            icon="shopping-bag"
-            iconBackground="#def2fd"
-            iconColor="#0087db"
-            amount={20}
+          <SectionList
+            sections={transactions}
+            keyExtractor={(item, index) => item.title + index}
+            renderItem={({item}) => (
+              <TransactionItem
+                title={item.title}
+                description={item.description}
+                amount={`$${item.amount.toFixed(2)}`}
+                data={{card: selectedCard!.cardRaw, transaction: item.dataRaw}}
+              />
+            )}
+            renderSectionHeader={({section: {title}}) => (
+              <TransactionItemHeader title={title} />
+            )}
           />
-          <TransactionItem
-            title="Entretenimiento"
-            transactions={66}
-            icon="headphones"
-            iconBackground="#EAE9F4"
-            iconColor="#4339A0"
-            amount={300}
-          />
-          <TransactionItem
-            title="Automovil"
-            transactions={5}
-            icon="truck"
-            iconBackground="#FAE8FC"
-            iconColor="#A751B1"
-            amount={100}
-          />
-          <TransactionItem
-            title="Comida"
-            transactions={14}
-            icon="coffee"
-            iconBackground="#FFE5E5"
-            iconColor="#B84D41"
-            amount={33}
-          />
-          <TransactionItem
-            title="Drogas"
-            transactions={120}
-            icon="shopping-cart"
-            iconBackground="#9a64ff"
-            iconColor="#3d2765"
-            amount={3420}
-          />
-        </ScrollView>
-      </GestureRecognizer>
+        </View>
+      </View>
+
+      <FloatingAction
+        floatingIcon={<Icon name="cash-sharp" size={30} color={colors.whith} />}
+        animated={true}
+        showBackground={false}
+        color={colors.secundary}
+        onPressMain={() => setShowModalPayment(true)}
+      />
+      <ConfirmationModal
+        title="New payment"
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac est ipsum. Nulla dolor justo, vestibulum auctor felis nec, aliquam molestie erat. Donec ligula libero, dictum id leo eget, consectetur posuere quam. Pellentesque pellentesque nisi vel justo faucibus porta."
+        show={showModalPayment}
+        onValidated={() => setShowModalPayment(false)}
+        onCancel={() => setShowModalPayment(false)}
+      />
+      <ErrorModal
+        show={errorModal.show}
+        title="Sign up"
+        description={errorModal.message}
+        onCancel={() => setErrorModal({show: false, message: ''})}
+      />
     </View>
   );
 };
@@ -209,7 +205,23 @@ const HomeScreen = ({navigation}: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7fbff',
+    backgroundColor: colors.primary,
+  },
+  content: {
+    backgroundColor: colors.whith,
+    flex: 1,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginTop: 100,
+  },
+  cardContainer: {
+    height: 210,
+    width: 310,
+    marginTop: -100,
+    alignSelf: 'center',
+    zIndex: 10,
   },
   title: {
     fontSize: 20,

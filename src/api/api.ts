@@ -5,16 +5,16 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Disable lowercase in headers
-// XMLHttpRequest.prototype.setRequestHeader = function (
-//   header: string,
-//   value: any
-// ): void {
-//   if (this.readyState !== this.OPENED) {
-//     throw new Error('Request has not been opened');
-//   }
-//   //@ts-ignore
-//   this._headers[header /* .toLowerCase() */] = String(value);
-// };
+//Disable lowercase in headers
+XMLHttpRequest.prototype.setRequestHeader = function (
+  header: string,
+  value: any
+): void {
+  if (this.readyState !== this.OPENED) {
+    throw new Error('Request has not been opened');
+  }
+  //@ts-ignore
+  this._headers[header /* .toLowerCase() */] = String(value);
+};
 
 export default api;

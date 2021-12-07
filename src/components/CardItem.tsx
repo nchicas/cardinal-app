@@ -3,15 +3,18 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { CardItemDTO } from '../models/CardsDTO';
 import {colors} from '../utils.tsx/colors';
 
 export type Props = {
+  cardNumber: string
   name: string;
   amount: number;
   isLastCard: boolean;
+  data?: CardItemDTO
 };
 
-const CardItem = ({name, amount, isLastCard}: Props) => {
+const CardItem = ({name,cardNumber, amount, isLastCard, data}: Props) => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <View
@@ -35,12 +38,12 @@ const CardItem = ({name, amount, isLastCard}: Props) => {
       ) : (
         <TouchableOpacity
           style={{flex: 1}}
-          onPress={() => navigation.navigate('DetailCardScreen')}>
+          onPress={() => navigation.navigate('DetailCardScreen', data)}>
           <Text style={styles.title}>{name}</Text>
           <View style={{flex: 1}} />
           <View>
             <Text style={styles.company}>Cardinal</Text>
-            <Text style={styles.code}>*************6666</Text>
+            <Text style={styles.code}>{cardNumber}</Text>
             <Text style={styles.amount}>{`$${amount}`}</Text>
           </View>
         </TouchableOpacity>

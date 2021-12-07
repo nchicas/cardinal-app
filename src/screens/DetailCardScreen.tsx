@@ -10,8 +10,19 @@ import {colors} from '../utils.tsx/colors';
 import CardItem from '../components/CardItem';
 import ConfirmationModal from '../components/ConfirmationModal';
 import CardItemCopy from '../components/CardItemCopy';
+import { CardItemDTO } from '../models/CardsDTO';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import moment from 'moment';
 
-const DetailCardScreen = () => {
+type RootStackParamList = {
+  HomeScreen: CardItemDTO;
+};
+
+
+type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
+
+const DetailCardScreen = ({route}: Props) => {
+  const parameters = route.params;
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const [showModalCard, setShowModalCard] = useState(false);
   const [code, setCode] = useState('');
@@ -23,7 +34,7 @@ const DetailCardScreen = () => {
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
             <View style={{alignItems: 'center', paddingTop: 10}}>
-              <CardItem name="John Doe" amount={0} isLastCard={false} />
+              <CardItem name={parameters.name_on_card} amount={0} isLastCard={false} cardNumber={parameters.bank_card_number} />
             </View>
             <ScrollView>
               <View
@@ -33,14 +44,12 @@ const DetailCardScreen = () => {
                   marginHorizontal: 10,
                   marginBottom: 2,
                 }}>
-                <CardItemCopy title="Code" value="John Doe" />
+                <CardItemCopy title="Code" value={parameters.name_on_card} />
                 <CardItemCopy
                   title="Number card"
-                  value="*********************51"
+                  value={parameters.bank_card_number}
                 />
-                <CardItemCopy title="Month" value="**" />
-                <CardItemCopy title="Year" value="****" />
-                <CardItemCopy title="CVC" value="***" />
+                <CardItemCopy title="Expiration date" value={moment(parameters.expires_date).format('MM/YY')} />
               </View>
             </ScrollView>
           </View>

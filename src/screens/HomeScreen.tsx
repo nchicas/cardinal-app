@@ -13,47 +13,104 @@ import Carousel from 'react-native-snap-carousel';
 import CardItem from '../components/CardItem';
 import Card from '../models/Card';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { getCardsService } from '../api/cards';
+import { useStoreon } from 'storeon/react';
+import { States, Events } from '../store/store';
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/core';
+import { getTransactionService } from '../api/transaction';
+import Transaction from '../models/Transaction';
+import moment from 'moment';
+import lodash from 'lodash'
+import ErrorModal from '../components/ErrorModal';
 
 const HomeScreen = () => {
+  const {token, dispatch} = useStoreon<States, Events>('token');
+  const {dispatch: busyDispatch} = useStoreon<States, Events>('isBusy');
+
+  const [errorModal, setErrorModal] = useState({show: false, message: ''});
   const [transactions, setTransactions] = useState<TransactionCategory[]>([
-    {
-      title: 'Category 1',
-      data: [
-        {
-          title: 'Transaction 1',
-          description: 'Transaction description 1',
-          amount: 0,
-          status: TransactionStatus.Ok,
-        },
-      ],
-    },
-    {
-      title: 'Category 2',
-      data: [
-        {
-          title: 'Transaction 2',
-          description: 'Transaction description 1',
-          amount: 10,
-          status: TransactionStatus.Ok,
-        },
-        {
-          title: 'Transaction 3',
-          description: 'Transaction description 1',
-          amount: 30,
-          status: TransactionStatus.Ok,
-        },
-      ],
-    },
+    
   ]);
 
   const [cards, setCards] = useState<Card[]>([
-    {name: 'John Doe', amount: 10, isLastCard: false},
-    {name: 'John Doe', amount: 20, isLastCard: false},
-    {name: 'John Doe', amount: 30, isLastCard: false},
-    {name: '', amount: 0, isLastCard: true},
   ]);
 
+  const [selectedCard, setSelectedCard] = useState<Card>()
+
   const [showModalPayment, setShowModalPayment] = useState(false);
+
+  const loadCards = async () => {
+    try {
+      busyDispatch('setIsBusy', true)
+      var response = await getCardsService(token)
+      if(response.data.cards){
+        var newCards: Card[] = response.data.cards.map((value ) => {
+          return {name: value.name_on_card, cardNumber: value.bank_card_number, amount: 0, isLastCard:false, cardRaw: value}
+        })
+        newCards.push({name: '', cardNumber: '', amount: 0, cardRaw: undefined, isLastCard: true  })
+        setCards(newCards)
+        setSelectedCard(newCards[0])
+      }
+      busyDispatch('setIsBusy', false)
+      if(selectedCard?.cardRaw?.account?.id){
+        loadTransaction(selectedCard?.cardRaw?.account?.id)
+      }
+      
+    } catch (error) {
+      busyDispatch('setIsBusy', false)
+      if(axios.isAxiosError(error)){
+        setErrorModal({show: true, message: error.message})
+      }
+    }
+  }
+
+  const loadTransaction = async (userId: string) => {
+    try {
+      busyDispatch('setIsBusy', true)
+      var response = await getTransactionService(token, userId)
+      if(response.data.transactions){
+        
+        var newTransactions: Transaction[] = response.data.transactions.map((value ) => {
+          return {
+            title: value.details.type, 
+            description: value.details.description,
+            amount: Number(value.details.value.amount), 
+            status: TransactionStatus.Ok,
+            date: value.details.completed,
+            dateKey: moment(value.details.completed).format('DD-MM-YYYY'),
+            dataRaw: value
+          }
+        })
+        var orderTransaction = lodash.groupBy(newTransactions, 'dateKey')
+        var tc: TransactionCategory[] = []  
+        for (const property in orderTransaction) {
+          var value = orderTransaction[property];
+          var c: TransactionCategory = {
+            title: property,
+            data: value
+          }
+          tc.push(c)
+        }
+
+        setTransactions(tc)
+      }
+      busyDispatch('setIsBusy', false)
+    } catch (error) {
+      busyDispatch('setIsBusy', false)
+      if(axios.isAxiosError(error)){
+        console.log('ERROR', error);
+        
+        setErrorModal({show: true, message: error.message})
+      }
+    }
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadCards()
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -67,7 +124,9 @@ const HomeScreen = () => {
               <CardItem
                 name={item.name}
                 amount={item.amount}
+                cardNumber={item.cardNumber}
                 isLastCard={item.isLastCard}
+                data={item.cardRaw}
               />
             )}
             sliderWidth={310}
@@ -77,6 +136,13 @@ const HomeScreen = () => {
             layout="tinder"
             layoutCardOffset={9}
             loop
+            onSnapToItem= {(sliderIndex) => {
+              const c = cards[sliderIndex]
+              setSelectedCard(c)
+              if(c.cardRaw?.account?.id){
+                loadTransaction(c.cardRaw?.account?.id)
+              }
+            }}
           />
         </View>
         <View style={{flex: 1}}>
@@ -88,7 +154,8 @@ const HomeScreen = () => {
               <TransactionItem
                 title={item.title}
                 description={item.description}
-                amount={`+ $${item.amount}`}
+                amount={`$${item.amount.toFixed(2)}`}
+                data={{card: selectedCard!.cardRaw, transaction: item.dataRaw}}
               />
             )}
             renderSectionHeader={({section: {title}}) => (
@@ -112,6 +179,13 @@ const HomeScreen = () => {
         onValidated={() => setShowModalPayment(false)}
         onCancel={() => setShowModalPayment(false)}
       />
+      <ErrorModal
+        show={errorModal.show}
+        title="Sign up"
+        description={errorModal.message}
+        onCancel={() => setErrorModal({show: false, message: ''})}
+      />
+      
     </View>
   );
 };

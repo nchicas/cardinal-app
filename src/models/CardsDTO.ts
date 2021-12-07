@@ -1,5 +1,5 @@
 export interface CardsDTO {
-    cards: Card[];
+    cards: CardItemDTO[];
 }
 
 export interface CardDTO {
@@ -26,7 +26,7 @@ export interface CardDTO {
     customer_id: string;
 }
 
-export interface Card {
+export interface CardItemDTO {
     bank_id: string;
     bank_card_number: string;
     name_on_card: string;

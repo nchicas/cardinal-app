@@ -1,8 +1,8 @@
 export interface TransactionDTO {
-    transactions: Transaction[];
+    transactions: TransactionDTOItem[];
 }
 
-export interface Transaction {
+export interface TransactionDTOItem {
     id: string;
     this_account: Account;
     other_account: Account;

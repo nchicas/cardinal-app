@@ -12,11 +12,29 @@ import ConfirmationModal from '../components/ConfirmationModal';
 import CardItemCopy from '../components/CardItemCopy';
 import CardItemText from '../components/CardItemText';
 import {ScrollView} from 'react-native-gesture-handler';
+import { TransactionDTOItem } from '../models/TransactionDTO';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { CardItemDTO } from '../models/CardsDTO';
+import moment from 'moment';
 
-const DetailTransactionScreen = () => {
+export type DetailTransactionParam = {
+  card?: CardItemDTO,
+  transaction: TransactionDTOItem
+}
+
+type RootStackParamList = {
+  HomeScreen: DetailTransactionParam;
+};
+
+
+type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
+
+const DetailTransactionScreen = ({route}: Props) => {
+  const parameters = route.params;
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   const [showModalCard, setShowModalCard] = useState(false);
   const [code, setCode] = useState('');
+console.log(parameters.card?.bank_card_number);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -25,7 +43,11 @@ const DetailTransactionScreen = () => {
         <View style={styles.cardShadow}>
           <View style={styles.cardContainer}>
             <View style={{alignItems: 'center', paddingTop: 10}}>
-              <CardItem name="John Doe" amount={0} isLastCard={false} />
+              <CardItem 
+              name={parameters?.card?.name_on_card ? parameters.card.name_on_card : ''} 
+              amount={0} 
+              isLastCard={false} 
+              cardNumber={parameters?.card?.bank_card_number ? parameters.card.bank_card_number : 'None'} />
             </View>
 
             <ScrollView style={{flex: 1}}>
@@ -44,24 +66,24 @@ const DetailTransactionScreen = () => {
                   }}>
                   <CardItemText
                     title="Title"
-                    value="Water bill"
+                    value={parameters.transaction.details.type}
                     style={{flex: 1}}
                   />
-                  <Text style={styles.amount}> $100.00</Text>
+                  <Text style={styles.amount}> {parameters.transaction.details.value.amount}</Text>
                 </View>
                 <CardItemText
                   title="Description"
-                  value="ANDA bill for service"
+                  value={parameters.transaction.details.description}
                   style={{}}
                 />
-                <CardItemText title="Date" value="12/12/12" style={{}} />
+                <CardItemText title="Date" value={moment(parameters.transaction.details.posted).format('DD/MM/YY')} style={{}} />
                 <Text style={styles.title}>More information</Text>
                 <CardItemCopy
-                  title="Code"
-                  value="3ej02399e0239je29ue8382ej93"
+                  title="Id"
+                  value={parameters.transaction.id}
                 />
-                <CardItemCopy title="Wallet" value="3094832984093" />
-                <CardItemCopy title="City" value="San Salvador" />
+                <CardItemCopy title="Other account" value={parameters.transaction.other_account.id} />
+
               </View>
             </ScrollView>
           </View>

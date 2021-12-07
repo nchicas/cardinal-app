@@ -7,6 +7,10 @@ const getTransactionService = (
     userId: string
 ): Promise<AxiosResponse<TransactionDTO>> => {
     const header = `token=${token}`
+    console.log(header);
+    console.log(userId);
+
+
     return api.get(
         '/obp/v4.0.0/my/banks/cardinalbank/accounts/' + userId + '/transactions',
         {

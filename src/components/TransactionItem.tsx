@@ -3,24 +3,28 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { TransactionDTOItem } from '../models/TransactionDTO';
+import { DetailTransactionParam } from '../screens/DetailTransactionScreen';
 import {colors} from '../utils.tsx/colors';
 
 export type TransactionItemProps = {
   title: string;
   description: string;
   amount: string;
+  data: DetailTransactionParam;
 };
 
 const TransactionItem = ({
   title,
   description,
   amount,
+  data
 }: TransactionItemProps) => {
   const navigation = useNavigation<StackNavigationProp<any, any>>();
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('DetailTransactionScreen')}>
+      onPress={() => navigation.navigate('DetailTransactionScreen', data)}>
       <View style={styles.iconContainer}>
         <Icon name="water-sharp" size={20} color={colors.whith} />
       </View>
